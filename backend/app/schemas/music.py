@@ -9,8 +9,8 @@ class MusicGenerationRequest(BaseModel):
     duration_ms: int = Field(
         default=10000,
         ge=1000,
-        le=60000,
-        description="Duration in milliseconds (1000-60000ms)"
+        le=120000,
+        description="Duration in milliseconds (1000-120000ms)"
     )
 
 class MusicGenerationResponse(BaseModel):

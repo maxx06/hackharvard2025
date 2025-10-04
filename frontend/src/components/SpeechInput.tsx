@@ -97,10 +97,48 @@ const SpeechInput = ({ onTranscript }: SpeechInputProps) => {
     );
   }
 
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedAudioURL, setGeneratedAudioURL] = useState<string | null>(null);
+  const [duration, setDuration] = useState(10000); // in milliseconds
+
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
     setTranscript(text);
     onTranscript(text);
+  };
+
+  const handleGenerateMusic = async () => {
+    if (!transcript.trim()) return;
+
+    setIsGenerating(true);
+    setGeneratedAudioURL(null);
+
+    try {
+      const response = await fetch('http://localhost:8000/api/v1/music/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: transcript,
+          duration_ms: duration,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to generate music');
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      setGeneratedAudioURL(url);
+    } catch (error) {
+      console.error('Error generating music:', error);
+      alert(`Error: ${error instanceof Error ? error.message : 'Failed to generate music'}`);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -139,8 +177,42 @@ const SpeechInput = ({ onTranscript }: SpeechInputProps) => {
           <p className="text-sm text-slate-500 mt-2">{interimTranscript}</p>
         )}
 
-        <div className="mt-3 text-center text-xs text-slate-500">
-          Graph updates automatically as you type or speak
+        <div className="mt-3 space-y-2">
+          <div className="space-y-2">
+            <label htmlFor="duration" className="block text-xs text-slate-400">
+              Duration: {duration / 1000}s
+            </label>
+            <input
+              id="duration"
+              type="range"
+              min="1000"
+              max="120000"
+              step="1000"
+              value={duration}
+              onChange={(e) => setDuration(Number(e.target.value))}
+              disabled={isGenerating}
+              className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-violet-600 disabled:opacity-50"
+            />
+          </div>
+
+          <button
+            onClick={handleGenerateMusic}
+            disabled={isGenerating || !transcript.trim()}
+            className="w-full px-4 py-2 rounded-md text-sm font-medium bg-violet-600 hover:bg-violet-700 disabled:bg-slate-700 disabled:text-slate-500 text-white transition-colors"
+          >
+            {isGenerating ? 'Generating Music...' : '🎵 Generate Music'}
+          </button>
+
+          {generatedAudioURL && (
+            <div className="bg-slate-950/50 rounded p-3 border border-slate-800">
+              <p className="text-xs text-green-400 mb-2">Music generated!</p>
+              <audio src={generatedAudioURL} controls className="w-full" />
+            </div>
+          )}
+
+          <div className="text-center text-xs text-slate-500">
+            Graph updates automatically as you type or speak
+          </div>
         </div>
       </div>
 
