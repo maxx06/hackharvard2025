@@ -5,7 +5,8 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "HackHarvard 2025 API"
     API_V1_STR: str = "/api/v1"
     BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:3001"]
-    ELEVENLABS_API_KEY: str
+    ELEVENLABS_API_KEY: str = ""
+    GOOGLE_API_KEY: str = ""
 
     class Config:
         env_file = ".env"

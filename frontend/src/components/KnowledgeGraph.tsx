@@ -106,12 +106,15 @@ const KnowledgeGraphInner = ({ initialNodes, initialEdges, onNodeDelete, onNodeE
   }, [edges]);
 
   // Update edge styles when nodes change (for cross-section detection)
-  // Using a ref to prevent infinite loops
-  const prevNodesLengthRef = React.useRef(nodes.length);
+  // Using a ref to track meaningful changes (not just position updates)
+  const prevNodesDataRef = React.useRef<string>('');
   React.useEffect(() => {
-    // Only update if nodes actually changed (not on every render)
-    if (nodes.length !== prevNodesLengthRef.current) {
-      prevNodesLengthRef.current = nodes.length;
+    // Create a signature of node data (excluding positions to avoid drag triggers)
+    const nodeSignature = nodes.map(n => `${n.id}-${n.data.type}-${n.data.label}-${n.data.section || ''}`).join('|');
+    
+    // Only update if node count, types, or structure actually changed (not just positions)
+    if (nodeSignature !== prevNodesDataRef.current) {
+      prevNodesDataRef.current = nodeSignature;
       setEdges((currentEdges) => updateAllEdgeStyles(currentEdges, nodes));
     }
   }, [nodes, setEdges]);
