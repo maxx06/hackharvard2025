@@ -4,9 +4,11 @@ import React, { useState, useEffect, useRef } from 'react';
 
 interface SpeechInputProps {
   onTranscript: (text: string) => void;
+  nodes?: any[];
+  edges?: any[];
 }
 
-const SpeechInput = ({ onTranscript }: SpeechInputProps) => {
+const SpeechInput = ({ onTranscript, nodes = [], edges = [] }: SpeechInputProps) => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
@@ -142,19 +144,30 @@ const SpeechInput = ({ onTranscript }: SpeechInputProps) => {
   };
 
   const handleGenerateMusic = async () => {
-    if (!transcript.trim()) return;
+    if (nodes.length === 0) {
+      alert('Please add some nodes to the graph first');
+      return;
+    }
 
     setIsGenerating(true);
     setGeneratedAudioURL(null);
 
     try {
+      // Send graph data instead of text prompt
+      const graphData = {
+        nodes: nodes,
+        edges: edges,
+      };
+
+      console.log('[SpeechInput] Sending graph data to music API:', graphData);
+
       const response = await fetch('http://localhost:8000/api/v1/music/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt: transcript,
+          graph_data: graphData,
           duration_ms: duration,
         }),
       });
