@@ -388,7 +388,7 @@ const KnowledgeGraphInner = ({ initialNodes, initialEdges, onNodeDelete, onNodeE
           {menu.type === 'node' && (
             <button
               onClick={handleEditNode}
-              className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 text-blue-600 font-medium transition-colors border-b border-gray-200"
+              className="w-full px-4 py-2 text-left text-sm hover:bg-blue-100 bg-blue-50 text-blue-700 font-semibold transition-colors border-b border-gray-200"
             >
               Edit Node
             </button>
@@ -499,8 +499,9 @@ const KnowledgeGraphInner = ({ initialNodes, initialEdges, onNodeDelete, onNodeE
                 type="text"
                 value={editingNode.data.label}
                 onChange={(e) => setEditingNode({ ...editingNode, data: { ...editingNode.data, label: e.target.value } })}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter node label"
+                autoFocus
               />
             </div>
 
@@ -509,7 +510,7 @@ const KnowledgeGraphInner = ({ initialNodes, initialEdges, onNodeDelete, onNodeE
               <select
                 value={editingNode.data.type}
                 onChange={(e) => setEditingNode({ ...editingNode, data: { ...editingNode.data, type: e.target.value as CustomNodeData['type'] } })}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="section">Section</option>
                 <option value="bassline">Bassline</option>
@@ -530,7 +531,7 @@ const KnowledgeGraphInner = ({ initialNodes, initialEdges, onNodeDelete, onNodeE
                   type="text"
                   value={editingNode.data.key || ''}
                   onChange={(e) => setEditingNode({ ...editingNode, data: { ...editingNode.data, key: e.target.value || undefined } })}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g., C, Am"
                 />
               </div>
@@ -540,7 +541,7 @@ const KnowledgeGraphInner = ({ initialNodes, initialEdges, onNodeDelete, onNodeE
                   type="number"
                   value={editingNode.data.bpm || ''}
                   onChange={(e) => setEditingNode({ ...editingNode, data: { ...editingNode.data, bpm: e.target.value ? parseInt(e.target.value) : undefined } })}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g., 140"
                 />
               </div>

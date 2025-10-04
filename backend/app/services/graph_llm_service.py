@@ -25,6 +25,11 @@ Supported commands:
 - deleteById: remove a node or edge by ID
   - Provide the exact id of the node or edge to delete
 
+- updateNode: modify an existing node's properties (IMPORTANT: Use deleteById + createNode pattern)
+  - When user edits a node label/type/key/bpm, delete the old node and create a new one with same ID
+  - This ensures all edges remain connected
+  - Example: To rename "Drums" to "Kick", do deleteById("drums-1") then createNode with id="drums-1" and label="Kick"
+
 Return format:
 {"commands": [
   {
@@ -120,7 +125,9 @@ Important rules:
 5. For incremental updates, only create/modify what's mentioned in the instruction
 6. Preserve existing graph structure unless explicitly asked to change it
 7. TEMPORAL/SEQUENTIAL KEYWORDS for SECTIONS ONLY: "after", "before", "then", "next", "following"
-8. Use existing node IDs from the current graph when making connections"""
+8. Use existing node IDs from the current graph when making connections
+9. When instruction says "Update node: renamed X to Y", find the node with label X and use deleteById + createNode with same ID but new label
+10. For node updates, preserve all edges - they will automatically reconnect to the node with same ID"""
 
 def get_graph_commands(current_graph: Dict[str, Any], new_text: str) -> Dict[str, Any]:
     """

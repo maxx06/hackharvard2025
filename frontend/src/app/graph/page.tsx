@@ -155,12 +155,37 @@ export default function Home() {
     setManualEdges(manualEdges.filter(edge => edge.source !== nodeId && edge.target !== nodeId));
   };
 
-  const handleEditNode = (nodeId: string, data: CustomNodeData) => {
+  const handleEditNode = (nodeId: string, newData: CustomNodeData) => {
+    const oldNode = nodes.find(n => n.id === nodeId);
+    if (!oldNode) return;
+
+    // Update UI
     setNodes(nodes.map(node =>
       node.id === nodeId
-        ? { ...node, data }
+        ? { ...node, data: newData }
         : node
     ));
+
+    // Build context message for AI Producer
+    const changes: string[] = [];
+    if (oldNode.data.label !== newData.label) {
+      changes.push(`renamed "${oldNode.data.label}" to "${newData.label}"`);
+    }
+    if (oldNode.data.type !== newData.type) {
+      changes.push(`changed type from ${oldNode.data.type} to ${newData.type}`);
+    }
+    if (oldNode.data.key !== newData.key) {
+      changes.push(`changed key to ${newData.key || 'none'}`);
+    }
+    if (oldNode.data.bpm !== newData.bpm) {
+      changes.push(`changed BPM to ${newData.bpm || 'none'}`);
+    }
+
+    if (changes.length > 0) {
+      const context = `Edited node: ${changes.join(', ')}`;
+      setLastChangeContext(context);
+      setTimeout(() => setLastChangeContext(null), 5000);
+    }
   };
 
   const handleDeleteEdge = (edgeId: string) => {
