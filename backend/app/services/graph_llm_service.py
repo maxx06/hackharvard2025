@@ -16,17 +16,17 @@ Supported commands:
   - Node types: "section", "drum", "bassline", "melody", "chord", "synth", "vocal", "fx", "genre"
   - Position: { "x": number, "y": number } - distribute nodes spatially to avoid overlap
   - Additional optional fields: key (musical key like "C", "Am"), bpm (tempo), section (for structure mode)
-  
+
 - connectNodes: link nodes with a relation (creates directed edges)
   - Relations: "next" (sequence), "after" (temporal order), "plays-in" (belongs to), "has-mood" (mood association), "blends-with" (harmonic), "influences" (genre)
   - Use relation field to describe the connection type
   - Direction matters: source → target shows the flow/order
-  
+
 - deleteById: remove a node or edge by ID
   - Provide the exact id of the node or edge to delete
 
 Return format:
-{"commands": [ 
+{"commands": [
   {
     "action": "createNode",
     "params": {
@@ -48,19 +48,79 @@ Return format:
   }
 ]}
 
+CRITICAL EDGE CREATION RULES:
+
+1. Create edges in these scenarios:
+
+   A) SONG STRUCTURE (sections: intro, verse, chorus, bridge, outro)
+      - Connect sections in sequence with "next" relation
+      - Example: intro → verse → chorus → bridge → outro
+
+   B) SECTION-TO-INSTRUMENT relationships
+      - When user says "intro with pads" or "verse has drums"
+      - Use "has" relation: intro → pads, verse → drums
+      - Section points to its instruments/elements
+
+   C) EXPLICIT CONNECTIONS
+      - When user says "connect X to Y" or "X goes with Y"
+      - Choose appropriate relation type
+
+2. Edge Relation Types (choose the right one):
+   - "next": Sequential flow between sections (intro→verse→chorus)
+   - "has": Section contains instruments (intro→pads, verse→drums, chorus→synth)
+   - "blends-with": Harmonic relationship (melody↔chords, synth↔pads)
+   - "supports": Rhythm section supporting other elements (bass→drums)
+   - "influences": Genre or mood affecting elements (house→synth, dark→pads)
+
+3. When NOT to create edges:
+   ❌ User just lists instruments: "drums bass melody" → NO edges between them
+   ❌ User adds standalone element: "add a synth" → NO edge (unless they say where)
+   ❌ Generic additions without context
+
+4. Edge Direction Rules:
+   - Sections: Always left-to-right (intro → verse → chorus)
+   - Section to instruments: Section → Instrument (intro → pads, verse → drums)
+   - Harmonic blends: Bidirectional implied, choose source → target logically
+   - Rhythm support: Supporting element → Main element (bass → drums)
+
+5. Examples:
+
+   "Intro with pads, verse with drums and bass, then chorus"
+   → Nodes: intro (section), pads, verse (section), drums, bass, chorus (section)
+   → Edges:
+     * intro → verse (relation: "next")
+     * verse → chorus (relation: "next")
+     * intro → pads (relation: "has")
+     * verse → drums (relation: "has")
+     * verse → bass (relation: "has")
+
+   "Add chorus after verse"
+   → Node: chorus (section)
+   → Edge: verse → chorus (relation: "next")
+
+   "Add synth that plays in the chorus"
+   → Node: synth
+   → Edge: chorus → synth (relation: "has")
+
+   "Add drums and bass" (no context)
+   → Nodes: drums, bass
+   → Edges: NONE (no relationship specified)
+
+   "Connect the melody to the chorus"
+   → Edge: chorus → melody (relation: "has")
+
+   "Bass supports the drums"
+   → Edge: bass → drums (relation: "supports")
+
 Important rules:
 1. Generate unique IDs for new nodes (use descriptive names like "intro", "chorus", "bass-1", "pad-1", "piano-1", etc.)
 2. Calculate positions to distribute nodes spatially - spread them out (increment x by 200-400, y by 150-200)
-3. Connect related nodes logically with directed edges
-4. When adding instruments to sections, position them below the section node
+3. ONLY connect section nodes, NEVER connect instrument/element nodes
+4. When adding instruments, position them below or around section nodes but DON'T connect them
 5. For incremental updates, only create/modify what's mentioned in the instruction
 6. Preserve existing graph structure unless explicitly asked to change it
-7. TEMPORAL/SEQUENTIAL KEYWORDS: Pay special attention to words like "after", "before", "then", "next", "following"
-   - "add X after Y" → create X, then connectNodes from Y to X with relation "after" or "next"
-   - "add X before Y" → create X, then connectNodes from X to Y
-   - "X then Y" → connectNodes from X to Y
-8. Always create directed edges (source → target) that show the flow, order, or hierarchy
-9. Use existing node IDs from the current graph when making connections"""
+7. TEMPORAL/SEQUENTIAL KEYWORDS for SECTIONS ONLY: "after", "before", "then", "next", "following"
+8. Use existing node IDs from the current graph when making connections"""
 
 def get_graph_commands(current_graph: Dict[str, Any], new_text: str) -> Dict[str, Any]:
     """

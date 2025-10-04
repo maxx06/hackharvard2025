@@ -74,7 +74,7 @@ export function executeCommands(
         
         case 'connectNodes': {
           const params = cmd.params as ConnectNodesParams;
-          
+
           // Check if source and target nodes exist (in current + new nodes)
           if (!allNodesMap.has(params.source)) {
             console.warn(`Source node "${params.source}" not found, skipping connection`);
@@ -84,37 +84,72 @@ export function executeCommands(
             console.warn(`Target node "${params.target}" not found, skipping connection`);
             break;
           }
-          
+
           // Check if edge already exists
           const edgeExists = currentEdges.some(
             e => e.source === params.source && e.target === params.target
           ) || edgesToAdd.some(
             e => e.source === params.source && e.target === params.target
           );
-          
+
           if (edgeExists) {
             console.warn(`Edge from "${params.source}" to "${params.target}" already exists`);
             break;
           }
-          
+
+          // Determine edge style based on relation type
+          const relation = params.relation || 'next';
+          let edgeColor = '#3b82f6'; // default blue
+          let strokeWidth = 2;
+          let animated = false;
+
+          switch (relation) {
+            case 'next':
+              edgeColor = '#8b5cf6'; // purple for sequential
+              strokeWidth = 3;
+              animated = true;
+              break;
+            case 'has':
+              edgeColor = '#10b981'; // green for section-instrument
+              strokeWidth = 2;
+              break;
+            case 'plays-in':
+              edgeColor = '#10b981'; // green for backwards compatibility
+              strokeWidth = 2;
+              break;
+            case 'blends-with':
+              edgeColor = '#06b6d4'; // cyan for harmonic
+              strokeWidth = 2;
+              animated = true;
+              break;
+            case 'supports':
+              edgeColor = '#f59e0b'; // amber for rhythm support
+              strokeWidth = 2;
+              break;
+            case 'influences':
+              edgeColor = '#ec4899'; // pink for genre/mood
+              strokeWidth = 2;
+              break;
+          }
+
           const newEdge: Edge = {
             id: `edge-${params.source}-${params.target}-${Date.now()}`,
             source: params.source,
             target: params.target,
-            type: 'smoothstep',
-            animated: false,
-            // No label - just the arrow
-            style: { 
-              stroke: '#3b82f6', 
-              strokeWidth: 2 
+            type: 'custom',
+            label: relation,
+            animated: animated,
+            style: {
+              stroke: edgeColor,
+              strokeWidth: strokeWidth
             },
             markerEnd: {
               type: MarkerType.ArrowClosed,
-              color: '#3b82f6',
+              color: edgeColor,
             },
           };
-          
-          console.log('Queuing edge:', newEdge);
+
+          console.log('Queuing edge:', newEdge, 'with relation:', relation);
           edgesToAdd.push(newEdge);
           break;
         }

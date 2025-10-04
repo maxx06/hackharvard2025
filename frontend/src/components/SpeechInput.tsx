@@ -12,6 +12,7 @@ const SpeechInput = ({ onTranscript }: SpeechInputProps) => {
   const [interimTranscript, setInterimTranscript] = useState('');
   const [isSupported, setIsSupported] = useState(true);
   const recognitionRef = useRef<any>(null);
+  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Check if browser supports speech recognition
@@ -45,10 +46,18 @@ const SpeechInput = ({ onTranscript }: SpeechInputProps) => {
         setTranscript(finalText);
         setInterimTranscript(interimText);
 
-        // Update graph in real-time
+        // Clear any existing silence timer
+        if (silenceTimerRef.current) {
+          clearTimeout(silenceTimerRef.current);
+        }
+
+        // Only trigger graph update after 2 seconds of silence
         const fullTranscript = finalText + interimText;
         if (fullTranscript.trim()) {
-          onTranscript(fullTranscript.trim());
+          silenceTimerRef.current = setTimeout(() => {
+            console.log('[SpeechInput] Silence detected, triggering graph update');
+            onTranscript(fullTranscript.trim());
+          }, 2000);
         }
       };
 
@@ -77,6 +86,11 @@ const SpeechInput = ({ onTranscript }: SpeechInputProps) => {
     if (isListening) {
       recognitionRef.current.stop();
       setIsListening(false);
+
+      // Clear silence timer when stopping
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+      }
     } else {
       recognitionRef.current.start();
       setIsListening(true);
@@ -86,6 +100,12 @@ const SpeechInput = ({ onTranscript }: SpeechInputProps) => {
   const handleClear = () => {
     setTranscript('');
     setInterimTranscript('');
+
+    // Clear silence timer
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+    }
+
     onTranscript(''); // Clear the graph
   };
 
@@ -104,7 +124,21 @@ const SpeechInput = ({ onTranscript }: SpeechInputProps) => {
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
     setTranscript(text);
-    onTranscript(text);
+
+    // Clear any existing silence timer
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+    }
+
+    // Trigger graph update after 1 second of no typing
+    if (text.trim()) {
+      silenceTimerRef.current = setTimeout(() => {
+        console.log('[SpeechInput] Typing stopped, triggering graph update');
+        onTranscript(text.trim());
+      }, 1000);
+    } else {
+      onTranscript(''); // Clear immediately if empty
+    }
   };
 
   const handleGenerateMusic = async () => {
@@ -211,7 +245,7 @@ const SpeechInput = ({ onTranscript }: SpeechInputProps) => {
           )}
 
           <div className="text-center text-xs text-slate-500">
-            Graph updates automatically as you type or speak
+            {isListening ? 'Graph will update when you pause speaking...' : 'Graph updates after you stop typing or speaking'}
           </div>
         </div>
       </div>
