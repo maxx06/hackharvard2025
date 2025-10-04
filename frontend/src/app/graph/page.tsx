@@ -223,7 +223,7 @@ export default function Home() {
 
       <div className="flex-1 flex flex-col lg:flex-row gap-4">
         <div className="lg:w-1/3 space-y-3">
-          <SpeechInput onTranscript={handleTranscript} />
+          <SpeechInput onTranscript={handleTranscript} nodes={nodes} edges={[...edges, ...manualEdges]} />
 
           <AIProducer
             nodes={nodes}

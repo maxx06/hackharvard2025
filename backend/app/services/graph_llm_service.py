@@ -204,20 +204,195 @@ Return updated commands in JSON only."""
 async def get_graph_commands_async(current_graph: CurrentGraph, instruction: str) -> GraphCommandsResponse:
     """
     Async wrapper for get_graph_commands that works with Pydantic models.
-    
+
     Args:
         current_graph: Current graph state as Pydantic model
         instruction: Natural language instruction
-        
+
     Returns:
         GraphCommandsResponse with list of commands
     """
     # Convert Pydantic models to dicts
     graph_dict = current_graph.model_dump()
-    
+
     # Call the LLM
     commands_dict = get_graph_commands(graph_dict, instruction)
-    
+
     # Validate and return as Pydantic model
     return GraphCommandsResponse(**commands_dict)
+
+
+def graph_to_music_prompt(graph_data: Dict[str, Any]) -> str:
+    """
+    Convert a musical knowledge graph into a detailed text prompt for music generation.
+
+    Builds on the existing graph structure understanding from SYSTEM_PROMPT to create
+    rich, detailed prompts that describe the musical composition.
+
+    Args:
+        graph_data: Dict with 'nodes' and 'edges' lists
+
+    Returns:
+        Detailed text prompt describing the music to generate
+    """
+    nodes = graph_data.get('nodes', [])
+    edges = graph_data.get('edges', [])
+
+    if not nodes:
+        return "Create ambient background music"
+
+    # Categorize nodes by type
+    sections = []
+    instruments = []
+    moods = []
+    genres = []
+
+    # Build node lookup and categorize
+    node_map = {}
+    for node in nodes:
+        node_id = node.get('id')
+        node_data = node.get('data', {})
+        node_type = node_data.get('type', '')
+        label = node_data.get('label', '')
+
+        node_map[node_id] = node
+
+        if node_type == 'section':
+            sections.append(node)
+        elif node_type in ['drum', 'bassline', 'melody', 'chord', 'synth', 'vocal', 'fx']:
+            instruments.append(node)
+        elif node_type == 'genre':
+            genres.append(label)
+        else:
+            moods.append(label)
+
+    # Build edge relationships
+    section_sequence = []
+    section_instruments = {}  # section_id -> list of instrument labels
+
+    for edge in edges:
+        source_id = edge.get('source')
+        target_id = edge.get('target')
+        relation = edge.get('data', {}).get('relation', '')
+
+        source_node = node_map.get(source_id)
+        target_node = node_map.get(target_id)
+
+        if not source_node or not target_node:
+            continue
+
+        source_type = source_node.get('data', {}).get('type', '')
+        target_type = target_node.get('data', {}).get('type', '')
+
+        # Track section sequence (section -> section)
+        if source_type == 'section' and target_type == 'section' and relation == 'next':
+            section_sequence.append((source_node, target_node))
+
+        # Track section -> instrument relationships
+        if source_type == 'section' and relation == 'has':
+            if source_id not in section_instruments:
+                section_instruments[source_id] = []
+            section_instruments[source_id].append(target_node.get('data', {}).get('label', ''))
+
+    # Build the music prompt
+    prompt_parts = []
+
+    # Add genre/style if present
+    if genres:
+        prompt_parts.append(f"{', '.join(genres)} style")
+
+    # Check if we have structured sections
+    if section_sequence:
+        # Structure mode: describe the flow
+        prompt_parts.append("Track structure:")
+
+        # Build ordered section flow
+        visited = set()
+        section_flow = []
+
+        # Find first section (has outgoing but no incoming)
+        incoming_sections = {edge[1].get('id') for edge in section_sequence}
+        for sec_node in sections:
+            if sec_node.get('id') not in incoming_sections:
+                section_flow.append(sec_node)
+                visited.add(sec_node.get('id'))
+                break
+
+        # Follow the sequence
+        while len(section_flow) < len(sections):
+            current_id = section_flow[-1].get('id')
+            for source, target in section_sequence:
+                if source.get('id') == current_id and target.get('id') not in visited:
+                    section_flow.append(target)
+                    visited.add(target.get('id'))
+                    break
+            else:
+                break
+
+        # Describe each section with its instruments
+        for sec_node in section_flow:
+            sec_id = sec_node.get('id')
+            sec_label = sec_node.get('data', {}).get('label', '')
+            sec_details = sec_node.get('data', {}).get('details', '')
+
+            # Get detailed instrument descriptions
+            detailed_instruments = []
+            for inst_label in section_instruments.get(sec_id, []):
+                # Find the instrument node to get its details
+                inst_node = next((n for n in nodes if n.get('data', {}).get('label') == inst_label), None)
+                if inst_node:
+                    inst_details = inst_node.get('data', {}).get('details', '')
+                    detailed_instruments.append(inst_details if inst_details else inst_label)
+                else:
+                    detailed_instruments.append(inst_label)
+
+            # Build section description
+            section_desc = sec_details if sec_details else sec_label
+            if detailed_instruments:
+                prompt_parts.append(f"{section_desc} with {', '.join(detailed_instruments)}")
+            else:
+                prompt_parts.append(section_desc)
+
+    elif instruments:
+        # Discovery mode: just list instruments with their properties
+        instrument_descriptions = []
+        for inst_node in instruments:
+            inst_data = inst_node.get('data', {})
+            inst_label = inst_data.get('label', '')
+            inst_details = inst_data.get('details', '')
+            inst_key = inst_data.get('key', '')
+            inst_bpm = inst_data.get('bpm', '')
+
+            # Use details if available, otherwise just the label
+            if inst_details:
+                desc = inst_details
+            else:
+                desc = inst_label
+
+            if inst_key:
+                desc += f" in {inst_key}"
+            if inst_bpm:
+                desc += f" at {inst_bpm} BPM"
+
+            instrument_descriptions.append(desc)
+
+        prompt_parts.append("featuring " + ", ".join(instrument_descriptions))
+
+    # Add moods if present
+    if moods:
+        prompt_parts.append(f"with {', '.join(moods)} mood")
+
+    # Extract BPM from any node that has it
+    bpm_values = [node.get('data', {}).get('bpm') for node in nodes if node.get('data', {}).get('bpm')]
+    if bpm_values:
+        avg_bpm = int(sum(bpm_values) / len(bpm_values))
+        prompt_parts.append(f"tempo around {avg_bpm} BPM")
+
+    # Join everything together
+    final_prompt = ". ".join(prompt_parts)
+
+    # Add production quality description
+    final_prompt += ". High-quality production with clear separation between elements."
+
+    return final_prompt
 
