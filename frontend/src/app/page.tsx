@@ -1,10 +1,12 @@
-export default function Home() {
+import RecorderButton from "../components/RecorderButton";
+
+export default function Page() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-center font-mono text-sm">
-        <h1 className="text-4xl font-bold mb-4">HackHarvard 2025</h1>
-        <p className="text-lg">Welcome to your hackathon project!</p>
-      </div>
+    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-8">
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">
+        Voice‑to‑Text Demo 🎤
+      </h1>
+      <RecorderButton />
     </main>
-  )
+  );
 }
