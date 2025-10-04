@@ -32,7 +32,7 @@ export function recalculateEdges(nodes: Node<CustomNodeData>[]): Edge[] {
           source: node1.id,
           target: node2.id,
           label: compatibility.reason,
-          type: 'smoothstep',
+          type: 'custom',
           animated: compatibility.strength === 'high',
           style: {
             stroke: compatibility.strength === 'high' ? '#10b981' : compatibility.strength === 'medium' ? '#3b82f6' : '#6b7280',
@@ -51,12 +51,21 @@ function calculateNodeCompatibility(node1: CustomNodeData, node2: CustomNodeData
   reason: string;
   strength: 'high' | 'medium' | 'low'
 } {
+  const reasons: string[] = [];
+  let highestStrength: 'high' | 'medium' | 'low' = 'low';
+  let score = 0;
+
   // Key compatibility (highest priority)
   if (node1.key && node2.key) {
     const compatible = keyCompatibility[node1.key]?.includes(node2.key) ||
                       keyCompatibility[node2.key]?.includes(node1.key);
     if (compatible) {
-      return { compatible: true, reason: `${node1.key} ↔ ${node2.key}`, strength: 'high' };
+      reasons.push(`Keys: ${node1.key} ↔ ${node2.key}`);
+      highestStrength = 'high';
+      score += 10;
+    } else {
+      reasons.push(`Keys clash: ${node1.key} vs ${node2.key}`);
+      score -= 5;
     }
   }
 
@@ -64,39 +73,87 @@ function calculateNodeCompatibility(node1: CustomNodeData, node2: CustomNodeData
   if (node1.bpm && node2.bpm) {
     const bpmDiff = Math.abs(node1.bpm - node2.bpm);
     if (bpmDiff === 0) {
-      return { compatible: true, reason: `${node1.bpm} BPM`, strength: 'high' };
+      reasons.push(`Perfect tempo: ${node1.bpm} BPM`);
+      if (highestStrength !== 'high') highestStrength = 'high';
+      score += 8;
     } else if (bpmDiff <= 5) {
-      return { compatible: true, reason: `~${node1.bpm} BPM`, strength: 'medium' };
+      reasons.push(`Close tempo: ${node1.bpm}↔${node2.bpm} BPM (Δ${bpmDiff})`);
+      if (highestStrength === 'low') highestStrength = 'medium';
+      score += 5;
+    } else if (bpmDiff <= 10) {
+      reasons.push(`Tempo diff: ${bpmDiff} BPM`);
+      score += 2;
+    } else {
+      reasons.push(`Tempo clash: ${bpmDiff} BPM apart`);
+      score -= 3;
     }
   }
 
   // Type compatibility (rhythm section works together)
   const rhythmSection = new Set(['drum', 'bassline']);
   if (rhythmSection.has(node1.type!) && rhythmSection.has(node2.type!)) {
-    return { compatible: true, reason: 'Rhythm Section', strength: 'high' };
+    reasons.push('Rhythm section pair');
+    if (highestStrength !== 'high') highestStrength = 'high';
+    score += 7;
   }
 
   // Melodic elements work together
   const melodicElements = new Set(['melody', 'chord', 'synth']);
   if (melodicElements.has(node1.type!) && melodicElements.has(node2.type!)) {
-    return { compatible: true, reason: 'Harmonic', strength: 'medium' };
+    reasons.push('Harmonic elements');
+    if (highestStrength === 'low') highestStrength = 'medium';
+    score += 6;
   }
 
   // Genre compatibility with other elements
   if (node1.type === 'genre' || node2.type === 'genre') {
-    return { compatible: true, reason: 'Genre Match', strength: 'medium' };
+    reasons.push('Genre context');
+    if (highestStrength === 'low') highestStrength = 'medium';
+    score += 4;
   }
 
   // FX can connect to anything
   if (node1.type === 'fx' || node2.type === 'fx') {
-    return { compatible: true, reason: 'Effect Chain', strength: 'low' };
+    reasons.push('Effect processing');
+    score += 3;
   }
 
   // Vocals work with most things
   if (node1.type === 'vocal' || node2.type === 'vocal') {
-    return { compatible: true, reason: 'Vocal Mix', strength: 'medium' };
+    reasons.push('Vocal arrangement');
+    if (highestStrength === 'low') highestStrength = 'medium';
+    score += 5;
   }
 
-  // Default: all musical elements can potentially work together
-  return { compatible: true, reason: 'Musical Element', strength: 'low' };
+  // Bass and melody relationship
+  if ((node1.type === 'bassline' && node2.type === 'melody') ||
+      (node1.type === 'melody' && node2.type === 'bassline')) {
+    reasons.push('Bass-melody relationship');
+    score += 4;
+  }
+
+  // If no specific reasons, add a default
+  if (reasons.length === 0) {
+    reasons.push('Generic compatibility');
+    score += 1;
+  }
+
+  // Determine relationship type for undirected graph
+  let relationshipType = 'relates to';
+  if (rhythmSection.has(node1.type!) && rhythmSection.has(node2.type!)) {
+    relationshipType = 'layered with';
+  } else if (melodicElements.has(node1.type!) && melodicElements.has(node2.type!)) {
+    relationshipType = 'blends with';
+  } else if (node1.type === 'genre' || node2.type === 'genre') {
+    relationshipType = 'influences';
+  }
+
+  // Build comprehensive label with score
+  const label = `${relationshipType}\nScore: ${score}\n${reasons.join('\n')}`;
+
+  return {
+    compatible: score > 0,
+    reason: label,
+    strength: highestStrength
+  };
 }

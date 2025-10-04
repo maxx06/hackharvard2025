@@ -8,12 +8,29 @@ interface GraphControlsProps {
   onClearGraph: () => void;
 }
 
+const nodeTypes: { value: CustomNodeData['type']; label: string; color: string }[] = [
+  { value: 'section', label: 'Section', color: 'bg-purple-700' },
+  { value: 'bassline', label: 'Bassline', color: 'bg-purple-600' },
+  { value: 'drum', label: 'Drum', color: 'bg-red-500' },
+  { value: 'melody', label: 'Melody', color: 'bg-blue-500' },
+  { value: 'genre', label: 'Genre', color: 'bg-pink-500' },
+  { value: 'chord', label: 'Chord', color: 'bg-indigo-500' },
+  { value: 'vocal', label: 'Vocal', color: 'bg-green-500' },
+  { value: 'fx', label: 'FX', color: 'bg-orange-500' },
+  { value: 'synth', label: 'Synth', color: 'bg-cyan-500' },
+];
+
 const GraphControls = ({ onAddNode, onClearGraph }: GraphControlsProps) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newNodeLabel, setNewNodeLabel] = useState('');
   const [newNodeType, setNewNodeType] = useState<CustomNodeData['type']>('melody');
   const [newNodeKey, setNewNodeKey] = useState('');
   const [newNodeBpm, setNewNodeBpm] = useState('');
+
+  const onDragStart = (event: React.DragEvent, nodeType: CustomNodeData['type']) => {
+    event.dataTransfer.setData('application/reactflow', nodeType);
+    event.dataTransfer.effectAllowed = 'move';
+  };
 
   const handleAddNode = () => {
     if (newNodeLabel.trim()) {
@@ -33,76 +50,34 @@ const GraphControls = ({ onAddNode, onClearGraph }: GraphControlsProps) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 border-2 border-gray-200">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-bold text-gray-800">Manual Controls</h3>
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="px-3 py-1 text-sm rounded-md font-medium bg-blue-500 hover:bg-blue-600 text-white transition-colors"
-        >
-          {showAddForm ? '✕ Cancel' : '+ Add Node'}
-        </button>
+    <div className="bg-slate-900/50 rounded-lg border border-slate-800 p-3">
+      <div className="mb-3">
+        <h3 className="text-xs font-bold text-white mb-2">Drag & Drop Nodes</h3>
+        <div className="grid grid-cols-3 gap-1.5">
+          {nodeTypes.map((nodeType) => (
+            <div
+              key={nodeType.value}
+              draggable
+              onDragStart={(e) => onDragStart(e, nodeType.value)}
+              className={`${nodeType.color} text-white text-[10px] px-2 py-1.5 rounded-md cursor-move text-center font-medium hover:opacity-80 transition-opacity`}
+            >
+              {nodeType.label}
+            </div>
+          ))}
+        </div>
+        <p className="text-[10px] text-slate-500 mt-2 text-center italic">
+          Drag onto canvas to add
+        </p>
       </div>
 
-      {showAddForm && (
-        <div className="space-y-3 pt-3 border-t border-gray-200">
-          <input
-            type="text"
-            placeholder="Node label"
-            value={newNodeLabel}
-            onChange={(e) => setNewNodeLabel(e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          <select
-            value={newNodeType}
-            onChange={(e) => setNewNodeType(e.target.value as CustomNodeData['type'])}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="bassline">🎸 Bassline</option>
-            <option value="drum">🥁 Drum</option>
-            <option value="melody">🎹 Melody</option>
-            <option value="genre">🎵 Genre</option>
-            <option value="chord">🎼 Chord</option>
-            <option value="vocal">🎤 Vocal</option>
-            <option value="fx">✨ FX</option>
-            <option value="synth">🎛️ Synth</option>
-          </select>
-
-          <div className="grid grid-cols-2 gap-2">
-            <input
-              type="text"
-              placeholder="Key (e.g., C, Am)"
-              value={newNodeKey}
-              onChange={(e) => setNewNodeKey(e.target.value)}
-              className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="number"
-              placeholder="BPM"
-              value={newNodeBpm}
-              onChange={(e) => setNewNodeBpm(e.target.value)}
-              className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <button
-            onClick={handleAddNode}
-            className="w-full px-4 py-2 text-sm rounded-md font-medium bg-green-500 hover:bg-green-600 text-white transition-colors"
-          >
-            Add Node
-          </button>
-        </div>
-      )}
-
-      <div className="mt-3 pt-3 border-t border-gray-200">
+      <div className="mt-2 pt-2 border-t border-slate-800">
         <button
           onClick={onClearGraph}
-          className="w-full px-4 py-2 text-sm rounded-md font-medium bg-red-600 hover:bg-red-700 text-white transition-colors"
+          className="w-full px-3 py-1.5 text-xs rounded-md font-medium bg-red-600 hover:bg-red-700 text-white transition-colors"
         >
           Clear All
         </button>
-        <p className="text-xs text-gray-500 mt-2 text-center">
+        <p className="text-xs text-slate-500 mt-2 text-center">
           Right-click nodes/edges on canvas to delete
         </p>
       </div>

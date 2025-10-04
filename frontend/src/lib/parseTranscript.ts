@@ -1,5 +1,6 @@
 import { Node, Edge } from 'reactflow';
 import { CustomNodeData } from '@/components/CustomNode';
+import { detectSongStructure, parseSongStructureToGraph } from './parseSongStructure';
 
 // Musical key compatibility (Circle of Fifths)
 const keyCompatibility: { [key: string]: string[] } = {
@@ -16,7 +17,16 @@ const keyCompatibility: { [key: string]: string[] } = {
   'Dm': ['Dm', 'Am', 'Gm', 'F', 'C', 'Bb'],
 };
 
-export const parseTranscriptToGraph = (transcript: string): { nodes: Node<CustomNodeData>[], edges: Edge[] } => {
+export const parseTranscriptToGraph = (transcript: string): { nodes: Node<CustomNodeData>[], edges: Edge[], mode: 'structure' | 'discovery' } => {
+  // First check if this is a song structure description
+  if (detectSongStructure(transcript)) {
+    const result = parseSongStructureToGraph(transcript);
+    if (result.isStructured && result.nodes.length > 0) {
+      return { nodes: result.nodes, edges: result.edges, mode: 'structure' };
+    }
+  }
+
+  // Otherwise, parse as general musical concepts (undirected graph)
   const nodes: Node<CustomNodeData>[] = [];
   const edges: Edge[] = [];
 
@@ -111,7 +121,7 @@ export const parseTranscriptToGraph = (transcript: string): { nodes: Node<Custom
     }
   }
 
-  return { nodes, edges };
+  return { nodes, edges, mode: 'discovery' };
 };
 
 function calculateCompatibility(node1: CustomNodeData, node2: CustomNodeData): {
