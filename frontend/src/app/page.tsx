@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { ChevronDown, X, Play, Music, Mic, Headphones } from "lucide-react"
+import { ChevronDown, X, Play, Music, Mic, Headphones, Guitar, Drum, Piano, Volume2 } from "lucide-react"
+import WorldMusicRotator from "@/components/WorldMusicRotator"
 
 export default function Home() {
   return (
@@ -80,7 +81,7 @@ export default function Home() {
                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500/60 rounded-full animate-ping" />
                    </div>
                    <span className="font-bold text-xl text-white ml-2">
-                     JAMFLOW
+                     JAMFUSION
                    </span>
                 </div>
               </div>
@@ -109,8 +110,8 @@ export default function Home() {
               </h1>
                </div>
 
-              <p className="text-lg text-slate-300 leading-relaxed max-w-xl font-thin">
-                Built for musicians and creators. Speak your ideas, visualize relationships, and generate music instantly with state-of-the-art AI technology.
+               <p className="text-lg text-slate-300 leading-relaxed max-w-xl font-thin">
+                 Built for musicians and creators. Speak your ideas, visualize relationships, and generate music instantly by combining cultures and musical traditions with state-of-the-art AI technology.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -146,46 +147,8 @@ export default function Home() {
                 </div>
               </Card>
 
-              {/* Animated Stem Pills */}
-              <div className="grid grid-cols-5 gap-3">
-                {[
-                  { icon: Music, label: "Original", active: true },
-                  { icon: Mic, label: "Vocals", active: false },
-                  { icon: Headphones, label: "Bass", active: false },
-                  { icon: Music, label: "Drums", active: false },
-                  { icon: Music, label: "Guitar", active: false },
-                ].map((item, i) => (
-                  <Card
-                    key={i}
-                    className={`p-4 text-center space-y-2 border-slate-700/30 backdrop-blur-sm transition-all duration-300 hover:scale-105 ${
-                      item.active 
-                        ? "bg-slate-800/50 border-slate-600/50 shadow-lg shadow-slate-500/5" 
-                        : "bg-slate-800/30 hover:bg-slate-700/40"
-                    }`}
-                    style={{animationDelay: `${i * 0.1}s`}}
-                  >
-                    <div className={`text-2xl ${item.active ? "text-slate-300" : "text-slate-500"}`}>
-                      <item.icon className="w-6 h-6 mx-auto" />
-                    </div>
-                    <p className={`text-xs font-medium ${item.active ? "text-slate-200" : "text-slate-500"}`}>
-                      {item.label}
-                    </p>
-                    <div className="flex justify-center gap-1">
-                      {Array.from({ length: 4 }).map((_, j) => (
-                        <div
-                          key={j}
-                          className={`size-1 rounded-full transition-all duration-300 ${
-                            item.active 
-                              ? "bg-slate-400 animate-pulse" 
-                              : "bg-slate-600/30"
-                          }`}
-                          style={{animationDelay: `${j * 0.1}s`}}
-                        />
-                      ))}
-                    </div>
-                  </Card>
-                ))}
-              </div>
+              {/* World Music Instruments Rotator */}
+              <WorldMusicRotator />
             </div>
           </div>
         </section>
