@@ -46,11 +46,11 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left Column - Content */}
             <div className="space-y-8">
-              <h1 className="text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground">
+              <h1 className="text-5xl lg:text-6xl font-thin tracking-tight leading-tight text-foreground font-sans">
                 AI-Powered Music Creation & Visualization
               </h1>
 
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
+              <p className="text-lg text-muted-foreground leading-relaxed max-w-xl font-light">
                 Built for musicians and creators. Speak your ideas, visualize relationships, and generate music instantly with state-of-the-art AI technology.
               </p>
 
