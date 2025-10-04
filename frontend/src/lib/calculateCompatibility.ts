@@ -138,18 +138,25 @@ function calculateNodeCompatibility(node1: CustomNodeData, node2: CustomNodeData
     score += 1;
   }
 
-  // Determine relationship type for undirected graph
-  let relationshipType = 'relates to';
+  // Determine relationship type for undirected graph (one word labels)
+  let relationshipType = 'compatible';
   if (rhythmSection.has(node1.type!) && rhythmSection.has(node2.type!)) {
-    relationshipType = 'layered with';
+    relationshipType = 'supports';
   } else if (melodicElements.has(node1.type!) && melodicElements.has(node2.type!)) {
-    relationshipType = 'blends with';
+    relationshipType = 'blends-with';
   } else if (node1.type === 'genre' || node2.type === 'genre') {
     relationshipType = 'influences';
+  } else if ((node1.type === 'bassline' && node2.type === 'melody') ||
+             (node1.type === 'melody' && node2.type === 'bassline')) {
+    relationshipType = 'supports';
+  } else if (node1.type === 'vocal' || node2.type === 'vocal') {
+    relationshipType = 'has';
+  } else if (node1.type === 'fx' || node2.type === 'fx') {
+    relationshipType = 'has';
   }
 
-  // Build comprehensive label with score
-  const label = `${relationshipType}\nScore: ${score}\n${reasons.join('\n')}`;
+  // Simple label matching LLM relation types
+  const label = relationshipType;
 
   return {
     compatible: score > 0,

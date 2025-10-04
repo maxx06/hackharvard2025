@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
+import { Mic, Music, Guitar, Drum, Sparkles, Activity, Radio, Layers } from 'lucide-react';
 
 export interface CustomNodeData {
   label: string;
@@ -8,51 +9,104 @@ export interface CustomNodeData {
   bpm?: number;
   section?: string;
   isSection?: boolean;
+  details?: string;
 }
 
 const CustomNode = ({ data }: NodeProps<CustomNodeData>) => {
   const getNodeStyle = () => {
     switch (data.type) {
       case 'section':
-        return { bg: 'bg-purple-700', icon: '', border: 'border-4 border-purple-400', ring: 'ring-4 ring-purple-400/30', textSize: 'text-base', padding: 'px-6 py-3' };
-      case 'bassline':
-        return { bg: 'bg-purple-600', icon: '', border: 'border-2 border-white', ring: '', textSize: 'text-sm', padding: 'px-4 py-2' };
-      case 'drum':
-        return { bg: 'bg-red-500', icon: '', border: 'border-2 border-white', ring: '', textSize: 'text-sm', padding: 'px-4 py-2' };
-      case 'melody':
-        return { bg: 'bg-blue-500', icon: '', border: 'border-2 border-white', ring: '', textSize: 'text-sm', padding: 'px-4 py-2' };
-      case 'genre':
-        return { bg: 'bg-pink-500', icon: '', border: 'border-2 border-white', ring: '', textSize: 'text-sm', padding: 'px-4 py-2' };
-      case 'chord':
-        return { bg: 'bg-indigo-500', icon: '', border: 'border-2 border-white', ring: '', textSize: 'text-sm', padding: 'px-4 py-2' };
+        return {
+          icon: <Layers className="w-6 h-6" />,
+          iconBg: 'bg-blue-500/20',
+          textSize: 'text-lg',
+          padding: 'px-8 py-4'
+        };
       case 'vocal':
-        return { bg: 'bg-green-500', icon: '', border: 'border-2 border-white', ring: '', textSize: 'text-sm', padding: 'px-4 py-2' };
-      case 'fx':
-        return { bg: 'bg-orange-500', icon: '', border: 'border-2 border-white', ring: '', textSize: 'text-sm', padding: 'px-4 py-2' };
+        return {
+          icon: <Mic className="w-5 h-5" />,
+          iconBg: 'bg-cyan-500/20',
+          textSize: 'text-base',
+          padding: 'px-6 py-3'
+        };
+      case 'bassline':
+        return {
+          icon: <Activity className="w-5 h-5" />,
+          iconBg: 'bg-blue-500/20',
+          textSize: 'text-base',
+          padding: 'px-6 py-3'
+        };
+      case 'drum':
+        return {
+          icon: <Drum className="w-5 h-5" />,
+          iconBg: 'bg-red-500/20',
+          textSize: 'text-base',
+          padding: 'px-6 py-3'
+        };
+      case 'melody':
+        return {
+          icon: <Music className="w-5 h-5" />,
+          iconBg: 'bg-blue-500/20',
+          textSize: 'text-base',
+          padding: 'px-6 py-3'
+        };
       case 'synth':
-        return { bg: 'bg-cyan-500', icon: '', border: 'border-2 border-white', ring: '', textSize: 'text-sm', padding: 'px-4 py-2' };
+        return {
+          icon: <Radio className="w-5 h-5" />,
+          iconBg: 'bg-cyan-500/20',
+          textSize: 'text-base',
+          padding: 'px-6 py-3'
+        };
+      case 'chord':
+        return {
+          icon: <Guitar className="w-5 h-5" />,
+          iconBg: 'bg-indigo-500/20',
+          textSize: 'text-base',
+          padding: 'px-6 py-3'
+        };
+      case 'fx':
+        return {
+          icon: <Sparkles className="w-5 h-5" />,
+          iconBg: 'bg-orange-500/20',
+          textSize: 'text-base',
+          padding: 'px-6 py-3'
+        };
       default:
-        return { bg: 'bg-gray-500', icon: '', border: 'border-2 border-white', ring: '', textSize: 'text-sm', padding: 'px-4 py-2' };
+        return {
+          icon: <Music className="w-5 h-5" />,
+          iconBg: 'bg-gray-500/20',
+          textSize: 'text-base',
+          padding: 'px-6 py-3'
+        };
     }
   };
 
   const style = getNodeStyle();
 
   return (
-    <div className={`shadow-md rounded-md ${style.border} ${style.ring} ${style.bg} text-white min-w-[140px] ${style.padding}`}>
-      <Handle type="target" position={Position.Top} className="w-3 h-3" />
-      <div className="flex flex-col items-center">
-        {style.icon && <div className="text-lg mb-1">{style.icon}</div>}
-        <div className={`${style.textSize} font-bold text-center`}>{data.label}</div>
-        {data.type !== 'section' && (
-          <div className="flex gap-2 mt-1 text-xs opacity-90">
-            {data.type && <span className="capitalize">{data.type}</span>}
-            {data.key && <span>• {data.key}</span>}
-            {data.bpm && <span>• {data.bpm} BPM</span>}
-          </div>
-        )}
+    <div className="bg-gradient-to-br from-black via-blue-950 to-blue-900 backdrop-blur-sm border border-cyan-400/50 rounded-2xl shadow-xl text-white min-w-[180px]">
+      <Handle type="target" position={Position.Top} className="w-3 h-3 !bg-cyan-400" />
+      <div className={`flex flex-col items-center gap-3 ${style.padding}`}>
+        <div className={`${style.iconBg} rounded-full p-3`}>
+          {style.icon}
+        </div>
+        <div className="flex flex-col items-center gap-1">
+          <div className={`${style.textSize} font-semibold text-center`}>{data.label}</div>
+          {data.details && (
+            <div className="text-xs text-cyan-200/70 italic text-center max-w-[160px]">
+              {data.details}
+            </div>
+          )}
+          {data.type !== 'section' && (data.key || data.bpm) && (
+            <div className="flex gap-2 mt-1 text-xs text-cyan-200/60">
+              {data.key && <span>{data.key}</span>}
+              {data.key && data.bpm && <span>•</span>}
+              {data.bpm && <span>{data.bpm} BPM</span>}
+            </div>
+          )}
+        </div>
       </div>
-      <Handle type="source" position={Position.Bottom} className="w-3 h-3" />
+      <Handle type="source" position={Position.Bottom} className="w-3 h-3 !bg-cyan-400" />
     </div>
   );
 };

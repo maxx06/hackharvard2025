@@ -238,14 +238,14 @@ const SpeechInput = ({ onTranscript, nodes = [], edges = [] }: SpeechInputProps)
               value={duration}
               onChange={(e) => setDuration(Number(e.target.value))}
               disabled={isGenerating}
-              className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-violet-600 disabled:opacity-50"
+              className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-600 disabled:opacity-50"
             />
           </div>
 
           <button
             onClick={handleGenerateMusic}
             disabled={isGenerating || !transcript.trim()}
-            className="w-full px-4 py-2 rounded-md text-sm font-medium bg-violet-600 hover:bg-violet-700 disabled:bg-slate-700 disabled:text-slate-500 text-white transition-colors"
+            className="w-full px-4 py-2 rounded-md text-sm font-medium bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:text-slate-500 text-white transition-colors"
           >
             {isGenerating ? 'Generating Music...' : '🎵 Generate Music'}
           </button>

@@ -5,7 +5,7 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Jamflow",
+  title: "Jamfusion",
   description: "Visualize musical elements and discover compatible sounds with AI-powered knowledge graphs",
 }
 

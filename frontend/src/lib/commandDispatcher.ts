@@ -105,7 +105,7 @@ export function executeCommands(
 
           switch (relation) {
             case 'next':
-              edgeColor = '#8b5cf6'; // purple for sequential
+              edgeColor = '#3b82f6'; // blue for sequential
               strokeWidth = 3;
               animated = true;
               break;

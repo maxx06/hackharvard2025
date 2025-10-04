@@ -8,16 +8,16 @@ interface GraphControlsProps {
   onClearGraph: () => void;
 }
 
-const nodeTypes: { value: CustomNodeData['type']; label: string; color: string }[] = [
-  { value: 'section', label: 'Section', color: 'bg-purple-700' },
-  { value: 'bassline', label: 'Bassline', color: 'bg-purple-600' },
-  { value: 'drum', label: 'Drum', color: 'bg-red-500' },
-  { value: 'melody', label: 'Melody', color: 'bg-blue-500' },
-  { value: 'genre', label: 'Genre', color: 'bg-pink-500' },
-  { value: 'chord', label: 'Chord', color: 'bg-indigo-500' },
-  { value: 'vocal', label: 'Vocal', color: 'bg-green-500' },
-  { value: 'fx', label: 'FX', color: 'bg-orange-500' },
-  { value: 'synth', label: 'Synth', color: 'bg-cyan-500' },
+const nodeTypes: { value: CustomNodeData['type']; label: string; icon: string }[] = [
+  { value: 'section', label: 'Section', icon: '📍' },
+  { value: 'bassline', label: 'Bassline', icon: '🎸' },
+  { value: 'drum', label: 'Drum', icon: '🥁' },
+  { value: 'melody', label: 'Melody', icon: '🎵' },
+  { value: 'genre', label: 'Genre', icon: '🎭' },
+  { value: 'chord', label: 'Chord', icon: '🎹' },
+  { value: 'vocal', label: 'Vocal', icon: '🎤' },
+  { value: 'fx', label: 'FX', icon: '✨' },
+  { value: 'synth', label: 'Synth', icon: '🎛️' },
 ];
 
 const GraphControls = ({ onAddNode, onClearGraph }: GraphControlsProps) => {
@@ -50,35 +50,38 @@ const GraphControls = ({ onAddNode, onClearGraph }: GraphControlsProps) => {
   };
 
   return (
-    <div className="bg-slate-900/50 rounded-lg border border-slate-800 p-3">
+    <div className="bg-gradient-to-br from-slate-900 to-slate-950 rounded-lg border border-blue-400/30 p-4 shadow-lg">
       <div className="mb-3">
-        <h3 className="text-xs font-bold text-white mb-2">Drag & Drop Nodes</h3>
-        <div className="grid grid-cols-3 gap-1.5">
+        <h3 className="text-sm font-bold text-blue-400 mb-3 flex items-center gap-2">
+          <span>🎼</span> Drag & Drop Elements
+        </h3>
+        <div className="grid grid-cols-3 gap-2">
           {nodeTypes.map((nodeType) => (
             <div
               key={nodeType.value}
               draggable
               onDragStart={(e) => onDragStart(e, nodeType.value)}
-              className={`${nodeType.color} text-white text-[10px] px-2 py-1.5 rounded-md cursor-move text-center font-medium hover:opacity-80 transition-opacity`}
+              className="bg-slate-800/50 hover:bg-slate-700/50 text-white text-xs px-3 py-2 rounded-lg cursor-move text-center font-semibold hover:scale-105 active:scale-95 transition-all shadow-md border border-slate-600/30 hover:border-blue-400/40 flex flex-col items-center gap-1"
             >
-              {nodeType.label}
+              <span className="text-base">{nodeType.icon}</span>
+              <span>{nodeType.label}</span>
             </div>
           ))}
         </div>
-        <p className="text-[10px] text-slate-500 mt-2 text-center italic">
-          Drag onto canvas to add
+        <p className="text-xs text-blue-300/60 mt-3 text-center">
+          Drag elements onto the canvas
         </p>
       </div>
 
-      <div className="mt-2 pt-2 border-t border-slate-800">
+      <div className="mt-3 pt-3 border-t border-blue-400/20">
         <button
           onClick={onClearGraph}
-          className="w-full px-3 py-1.5 text-xs rounded-md font-medium bg-red-600 hover:bg-red-700 text-white transition-colors"
+          className="w-full px-4 py-2 text-sm rounded-lg font-semibold bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white transition-all shadow-md hover:shadow-lg"
         >
-          Clear All
+          🗑️ Clear All
         </button>
-        <p className="text-xs text-slate-500 mt-2 text-center">
-          Right-click nodes/edges on canvas to delete
+        <p className="text-xs text-slate-400 mt-3 text-center">
+          Right-click nodes/edges to delete
         </p>
       </div>
     </div>

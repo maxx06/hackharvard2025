@@ -54,9 +54,10 @@ interface ContextMenu {
 }
 
 const KnowledgeGraphInner = ({ initialNodes, initialEdges, onNodeDelete, onNodeEdit, onEdgeDelete, onEdgeAdd, onNodeDrop, mode = 'discovery' }: KnowledgeGraphProps) => {
-  // Only apply auto-layout for discovery mode
+  // Only apply auto-layout when in structure mode (has directed edges)
+  // In discovery mode, let users position nodes manually
   const { nodes: layoutedNodes, edges: layoutedEdges } = useMemo(
-    () => mode === 'structure' ? { nodes: initialNodes, edges: initialEdges } : getLayoutedElements(initialNodes, initialEdges),
+    () => mode === 'structure' ? getLayoutedElements(initialNodes, initialEdges) : { nodes: initialNodes, edges: initialEdges },
     [initialNodes, initialEdges, mode]
   );
 
@@ -130,14 +131,31 @@ const KnowledgeGraphInner = ({ initialNodes, initialEdges, onNodeDelete, onNodeE
     const edgesChanged = JSON.stringify(initialEdges) !== JSON.stringify(prevEdgesRef.current);
 
     if (nodesChanged || edgesChanged) {
-      const { nodes: newLayoutedNodes, edges: newLayoutedEdges } =
-        mode === 'structure' ? { nodes: initialNodes, edges: initialEdges } : getLayoutedElements(initialNodes, initialEdges);
+      // Preserve existing node positions that user may have moved
+      const existingPositions = new Map(nodes.map(n => [n.id, n.position]));
+
+      // Apply auto-layout only in structure mode
+      let newLayoutedNodes = initialNodes;
+      let newLayoutedEdges = initialEdges;
+
+      if (mode === 'structure') {
+        const layouted = getLayoutedElements(initialNodes, initialEdges);
+        newLayoutedNodes = layouted.nodes;
+        newLayoutedEdges = layouted.edges;
+      }
+
+      // Always restore user-positioned nodes (preserve manual positioning)
+      newLayoutedNodes = newLayoutedNodes.map(node => {
+        const existingPos = existingPositions.get(node.id);
+        return existingPos ? { ...node, position: existingPos } : node;
+      });
+
       setNodes(newLayoutedNodes);
       setEdges(newLayoutedEdges);
       prevNodesRef.current = initialNodes;
       prevEdgesRef.current = initialEdges;
     }
-  }, [initialNodes, initialEdges, mode, setNodes, setEdges]);
+  }, [initialNodes, initialEdges, mode, setNodes, setEdges, nodes]);
 
   // Update selection state without changing positions
   React.useEffect(() => {
@@ -522,6 +540,17 @@ const KnowledgeGraphInner = ({ initialNodes, initialEdges, onNodeDelete, onNodeE
                 <option value="fx">FX</option>
                 <option value="synth">Synth</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Details</label>
+              <input
+                type="text"
+                value={editingNode.data.details || ''}
+                onChange={(e) => setEditingNode({ ...editingNode, data: { ...editingNode.data, details: e.target.value || undefined } })}
+                className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g., hiphop vocals, deep 808 bass, mongolian throat singing"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-2">

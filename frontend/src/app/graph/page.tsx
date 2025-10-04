@@ -117,13 +117,14 @@ export default function Home() {
   }, [nodes, edges, manualEdges, mode]);
 
   // Auto-recalculate edges when nodes change (only in discovery mode)
-  // Skip if we're in structure mode (which uses directed edges)
+  // In structure mode, edges are managed by LLM commands
   useEffect(() => {
     if (mode === 'discovery') {
+      // Auto-calculate compatibility edges for discovery mode
       const autoEdges = recalculateEdges(nodes);
-      // Combine auto-generated edges with manually created edges
       setEdges([...autoEdges, ...manualEdges]);
     }
+    // In structure mode, don't touch edges - they're set by LLM
   }, [nodes, manualEdges, mode]);
 
   const handleAddNode = (label: string, type: CustomNodeData['type'], key?: string, bpm?: number) => {
@@ -207,7 +208,7 @@ export default function Home() {
       <div className="mb-4 border-b border-slate-800 pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-white">Jamflow</h1>
+            <h1 className="text-2xl font-bold text-white">Jamfusion</h1>
           </div>
           <p className="text-sm text-slate-400">
             Describe your sounds or song structure
@@ -217,7 +218,7 @@ export default function Home() {
           <p><strong className="text-slate-400">Structure:</strong> "Intro with ambient pads, verse with drums and bass, then chorus with synths"</p>
           <p><strong className="text-slate-400">Instruments:</strong> "Add drums and bass" • "Synth that plays in the chorus"</p>
           <p><strong className="text-slate-400">Modify:</strong> "Remove the bass" • "Connect melody to verse" • "Add bridge after chorus"</p>
-          <p className="text-violet-400/80 italic">💡 AI creates smart edges showing relationships between elements!</p>
+          <p className="text-blue-400/80 italic">💡 AI creates smart edges showing relationships between elements!</p>
         </div>
       </div>
 

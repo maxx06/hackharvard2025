@@ -213,20 +213,20 @@ export function AIProducer({
   const hasContent = feedbackText || isPlaying || isAnalyzing
 
   return (
-    <div className="bg-gradient-to-br from-purple-900/30 to-indigo-900/30 backdrop-blur-sm border border-purple-500/30 rounded-lg p-4 space-y-3">
+    <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/30 backdrop-blur-sm border border-blue-500/30 rounded-lg p-4 space-y-3">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <div className={`w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center ${isAnalyzing || isPlaying ? 'animate-pulse' : ''}`}>
+        <div className={`w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ${isAnalyzing || isPlaying ? 'animate-pulse' : ''}`}>
           <Sparkles className="w-5 h-5 text-white" />
         </div>
         <div className="flex-1">
           <h3 className="text-sm font-semibold text-white">AI Producer</h3>
-          <p className="text-xs text-purple-300">
+          <p className="text-xs text-blue-300">
             {isAnalyzing ? 'Listening and analyzing...' : isPlaying ? 'Speaking...' : 'Listening for changes'}
           </p>
         </div>
         {isAnalyzing && (
-          <Loader2 className="w-4 h-4 text-purple-400 animate-spin" />
+          <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
         )}
       </div>
 
@@ -234,8 +234,8 @@ export function AIProducer({
       {hasContent && (
         <div className="space-y-2">
           {feedbackText && (
-            <div className="bg-black/20 rounded-md p-3 border border-purple-500/20">
-              <p className="text-sm text-purple-100 italic">"{feedbackText}"</p>
+            <div className="bg-black/20 rounded-md p-3 border border-blue-500/20">
+              <p className="text-sm text-blue-100 italic">"{feedbackText}"</p>
             </div>
           )}
 
@@ -244,7 +244,7 @@ export function AIProducer({
             <div className="flex items-center gap-2">
               <button
                 onClick={togglePlayback}
-                className="p-2 bg-purple-600/50 hover:bg-purple-600 rounded-md transition-colors"
+                className="p-2 bg-blue-600/50 hover:bg-blue-600 rounded-md transition-colors"
                 title={isPlaying ? 'Pause' : 'Play'}
               >
                 {isPlaying ? (
@@ -253,9 +253,9 @@ export function AIProducer({
                   <Volume2 className="w-4 h-4 text-white" />
                 )}
               </button>
-              <div className="flex-1 h-1 bg-purple-900/50 rounded-full overflow-hidden">
+              <div className="flex-1 h-1 bg-blue-900/50 rounded-full overflow-hidden">
                 <div
-                  className={`h-full bg-gradient-to-r from-purple-500 to-indigo-500 ${isPlaying ? 'animate-pulse' : ''}`}
+                  className={`h-full bg-gradient-to-r from-blue-500 to-blue-600 ${isPlaying ? 'animate-pulse' : ''}`}
                   style={{ width: isPlaying ? '100%' : '0%' }}
                 />
               </div>
@@ -273,7 +273,7 @@ export function AIProducer({
 
       {/* Hint when no nodes */}
       {nodes.length === 0 && !isAnalyzing && (
-        <p className="text-xs text-purple-300/60 italic">
+        <p className="text-xs text-blue-300/60 italic">
           Add some musical elements to get producer feedback
         </p>
       )}
