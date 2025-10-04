@@ -56,7 +56,10 @@ export default function Home() {
 
               <div className="pt-2">
                 <Link href="/graph">
-                  <Button size="lg" className="text-base px-8 bg-primary hover:bg-primary/90 text-white rounded-full">
+                  <Button
+                    size="lg"
+                    className="text-base px-8 bg-blue-900 hover:bg-blue-800 text-white rounded-full"
+                  >
                     Get Started
                   </Button>
                 </Link>
