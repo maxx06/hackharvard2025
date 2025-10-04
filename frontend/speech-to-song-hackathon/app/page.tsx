@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ChevronDown, X } from "lucide-react"
@@ -27,39 +26,71 @@ export default function Home() {
                     <rect x="22" y="12" width="3" height="8" rx="1.5" />
                     <rect x="27" y="8" width="3" height="16" rx="1.5" />
                   </svg>
-                  <span className="font-semibold text-base text-foreground ml-2">JAMFLOW</span>
+                  <span className="font-semibold text-base text-foreground ml-2">MUSIC.AI</span>
                 </div>
+                <nav className="hidden md:flex items-center gap-8">
+                  <button className="flex items-center gap-1 text-sm text-foreground hover:text-foreground/80 transition-colors">
+                    Products & Services
+                    <ChevronDown className="size-4" />
+                  </button>
+                  <button className="flex items-center gap-1 text-sm text-foreground hover:text-foreground/80 transition-colors">
+                    Solutions
+                    <ChevronDown className="size-4" />
+                  </button>
+                  <button className="flex items-center gap-1 text-sm text-foreground hover:text-foreground/80 transition-colors">
+                    Resources
+                    <ChevronDown className="size-4" />
+                  </button>
+                  <button className="flex items-center gap-1 text-sm text-foreground hover:text-foreground/80 transition-colors">
+                    Company
+                    <ChevronDown className="size-4" />
+                  </button>
+                </nav>
               </div>
 
               <div className="flex items-center gap-4">
-                <Link href="/graph">
-                  <Button size="sm" className="bg-white hover:bg-white/90 text-black font-medium rounded-full px-6">
-                    Try Now
-                  </Button>
-                </Link>
+                <button className="text-sm text-foreground hover:text-foreground/80 transition-colors">Login</button>
+                <Button size="sm" className="bg-white hover:bg-white/90 text-black font-medium rounded-full px-6">
+                  Contact Sales
+                </Button>
               </div>
             </div>
           </div>
         </header>
+
+        <div className="bg-muted/30 border-b border-border/30">
+          <div className="container mx-auto px-6 py-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-foreground">
+                Looking to practice, perform, or process music? Try our Moises app made for musicians and producers.{" "}
+                <a href="#" className="underline hover:text-primary transition-colors">
+                  Click here
+                </a>
+              </p>
+              <button className="text-muted-foreground hover:text-foreground transition-colors">
+                <X className="size-4" />
+              </button>
+            </div>
+          </div>
+        </div>
 
         <section className="container mx-auto px-6 py-20 lg:py-24">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left Column - Content */}
             <div className="space-y-8">
               <h1 className="text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground">
-                AI-Powered Music Creation & Visualization
+                AI Audio Models to Power Your Music Business
               </h1>
 
               <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
-                Built for musicians and creators. Speak your ideas, visualize relationships, and generate music instantly with state-of-the-art AI technology.
+                Built for scale and powered by state-of-the-art, ethical AI solutions for audio and music
+                applications—delivering the highest-quality audio separation available.
               </p>
 
               <div className="pt-2">
-                <Link href="/graph">
-                  <Button size="lg" className="text-base px-8 bg-primary hover:bg-primary/90 text-white rounded-full">
-                    Get Started
-                  </Button>
-                </Link>
+                <Button size="lg" className="text-base px-8 bg-primary hover:bg-primary/90 text-white rounded-full">
+                  Contact Sales
+                </Button>
               </div>
             </div>
 
@@ -67,13 +98,11 @@ export default function Home() {
             <div className="space-y-4">
               <Card className="overflow-hidden bg-card/50 border-border/50 backdrop-blur-sm">
                 <div className="aspect-video bg-secondary/30 flex items-center justify-center">
-                  <Link href="/graph">
-                    <button className="size-20 rounded-full bg-white flex items-center justify-center hover:scale-105 transition-transform shadow-lg">
-                      <svg className="size-10 text-black ml-1" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </button>
-                  </Link>
+                  <button className="size-20 rounded-full bg-white flex items-center justify-center hover:scale-105 transition-transform shadow-lg">
+                    <svg className="size-10 text-black ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </button>
                 </div>
               </Card>
 
