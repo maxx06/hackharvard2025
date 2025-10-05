@@ -258,9 +258,17 @@ const SpeechInput = ({ onTranscript, nodes = [], edges = [] }: SpeechInputProps)
           </button>
 
           {generatedAudioURL && (
-            <div className="bg-slate-950/50 rounded p-3 border border-slate-800">
-              <p className="text-xs text-green-400 mb-2">Music generated!</p>
-              <audio src={generatedAudioURL} controls className="w-full" />
+            <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/30 backdrop-blur-sm border border-blue-500/30 rounded-lg p-4 space-y-2">
+              <p className="text-xs text-blue-300 font-medium">✓ Music Generated</p>
+              <audio
+                src={generatedAudioURL}
+                controls
+                className="w-full h-10 rounded-md"
+                style={{
+                  filter: 'brightness(0.9) saturate(0.8)',
+                  colorScheme: 'dark'
+                }}
+              />
             </div>
           )}
 

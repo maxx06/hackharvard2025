@@ -4,7 +4,10 @@ from typing import List
 class Settings(BaseSettings):
     PROJECT_NAME: str = "HackHarvard 2025 API"
     API_V1_STR: str = "/api/v1"
-    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:3001"]
+    BACKEND_CORS_ORIGINS: List[str] = [
+        "http://localhost:3000",
+        "http://localhost:3001",
+    ]
     ELEVENLABS_API_KEY: str = ""
     ELEVENLABS_VOICE_ID: str = "pNInz6obpgDQGcFmaJgB"  # Adam voice (default, calm professional)
     GOOGLE_API_KEY: str = ""

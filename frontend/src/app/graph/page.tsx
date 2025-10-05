@@ -206,23 +206,6 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col p-4 bg-slate-950">
-      <div className="mb-4 border-b border-slate-800 pb-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-white">Jamfusion</h1>
-          </div>
-          <p className="text-sm text-slate-400">
-            Describe your sounds or song structure
-          </p>
-        </div>
-        <div className="text-xs text-slate-500 mt-3 space-y-1">
-          <p><strong className="text-slate-400">Structure:</strong> "Intro with ambient pads, verse with drums and bass, then chorus with synths"</p>
-          <p><strong className="text-slate-400">Instruments:</strong> "Add drums and bass" • "Synth that plays in the chorus"</p>
-          <p><strong className="text-slate-400">Modify:</strong> "Remove the bass" • "Connect melody to verse" • "Add bridge after chorus"</p>
-          <p className="text-blue-400/80 italic">💡 AI creates smart edges showing relationships between elements!</p>
-        </div>
-      </div>
-
       <div className="flex-1 flex flex-col lg:flex-row gap-4">
         <div className="lg:w-1/3 space-y-3">
           <SpeechInput onTranscript={handleTranscript} nodes={nodes} edges={[...edges, ...manualEdges]} />
