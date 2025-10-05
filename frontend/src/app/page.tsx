@@ -136,13 +136,14 @@ export default function Home() {
             {/* Right Column - Demo Visualization */}
             <div className="space-y-6 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
               <Card className="overflow-hidden bg-slate-900/50 border-slate-700/50 backdrop-blur-sm hover:border-slate-600/50 transition-all duration-300 group">
-                <div className="aspect-video bg-gradient-to-br from-slate-800/30 to-slate-700/30 flex items-center justify-center relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-slate-600/5 to-slate-500/5 animate-pulse" />
-                  <Link href="/graph">
-                    <button className="size-20 rounded-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-xl hover:shadow-blue-500/25 group-hover:shadow-2xl">
-                      <Play className="size-8 text-white ml-1" />
-                    </button>
-                  </Link>
+                <div className="aspect-video bg-gradient-to-br from-slate-800/30 to-slate-700/30 relative">
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src="https://www.youtube.com/embed/GQqYw9a_Mco"
+                    title="Jamfusion Demo"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
                 </div>
               </Card>
 
