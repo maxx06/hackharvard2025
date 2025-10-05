@@ -128,7 +128,14 @@ export function AIProducer({
       if (!response.ok) {
         const errorText = await response.text()
         console.error('Producer API error:', response.status, errorText)
-        throw new Error(`Failed to get producer feedback: ${response.status}`)
+        let errorDetail = errorText
+        try {
+          const errorJson = JSON.parse(errorText)
+          errorDetail = errorJson.detail || errorText
+        } catch (e) {
+          // Keep errorText as is
+        }
+        throw new Error(`Failed to get producer feedback: ${errorDetail}`)
       }
 
       // Get feedback text from header
@@ -142,7 +149,16 @@ export function AIProducer({
       console.log('Received audio blob:', blob.size, 'bytes, type:', blob.type)
 
       if (blob.size === 0) {
-        throw new Error('Received empty audio file')
+        console.warn('Received empty audio, showing text feedback only')
+        setError('Audio generation failed - showing text feedback only')
+        return
+      }
+
+      // Verify we have valid audio data
+      if (blob.size < 100) {
+        console.warn('Audio file too small, likely invalid. Showing text feedback only')
+        setError('Audio too small - showing text feedback only')
+        return
       }
 
       const audioUrl = URL.createObjectURL(blob)

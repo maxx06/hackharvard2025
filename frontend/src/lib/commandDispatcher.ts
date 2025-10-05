@@ -51,6 +51,17 @@ export function executeCommands(
             break;
           }
           
+          // Calculate position based on node index to create better spread
+          const nodeIndex = allNodesMap.size;
+          const nodesPerRow = 3;
+          const horizontalSpacing = 250;
+          const verticalSpacing = 200;
+
+          const defaultPosition = {
+            x: (nodeIndex % nodesPerRow) * horizontalSpacing + 100,
+            y: Math.floor(nodeIndex / nodesPerRow) * verticalSpacing + 100
+          };
+
           const newNode: Node<CustomNodeData> = {
             id: params.id,
             type: 'custom',
@@ -61,10 +72,7 @@ export function executeCommands(
               ...(params.bpm && { bpm: params.bpm }),
               ...(params.section && { section: params.section }),
             },
-            position: params.position || { 
-              x: Math.random() * 400 + 100, 
-              y: Math.random() * 400 + 100 
-            },
+            position: params.position || defaultPosition,
           };
           
           nodesToAdd.push(newNode);

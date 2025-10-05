@@ -23,13 +23,29 @@ export function Recommendations({ nodes, edges }: RecommendationsProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const debounceTimer = useRef<NodeJS.Timeout | null>(null)
+  const lastGraphState = useRef<string>('')
 
   useEffect(() => {
     // Only generate recommendations if there are nodes in the graph
     if (nodes.length === 0) {
       setRecommendations([])
+      lastGraphState.current = ''
       return
     }
+
+    // Create a stable representation of the graph state
+    const graphState = JSON.stringify({
+      nodeIds: nodes.map(n => n.id).sort(),
+      edgeIds: edges.map(e => e.id).sort(),
+    })
+
+    // Skip if graph hasn't actually changed
+    if (graphState === lastGraphState.current) {
+      return
+    }
+
+    // Update last state
+    lastGraphState.current = graphState
 
     // Debounce API calls - wait 1.5 seconds after last graph change
     if (debounceTimer.current) {
@@ -108,17 +124,17 @@ export function Recommendations({ nodes, edges }: RecommendationsProps) {
   return (
     <div className="bg-slate-900/50 rounded-lg border border-slate-800 p-4">
       <div className="flex items-center gap-2 mb-3">
-        <Sparkles className="w-4 h-4 text-violet-400" />
-        <h3 className="text-sm font-semibold text-white">Culturally-Aware Recommendations</h3>
+        <Sparkles className="w-4 h-4 text-cyan-400" />
+        <h3 className="text-sm font-semibold text-white">Recommendations</h3>
       </div>
 
       {nodes.length === 0 ? (
         <p className="text-xs text-slate-500 italic">
-          Add some elements to your graph to get culturally-aware suggestions
+          Add some elements to your graph to get suggestions
         </p>
       ) : isLoading ? (
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-5 h-5 text-violet-400 animate-spin" />
+          <Loader2 className="w-5 h-5 text-cyan-400 animate-spin" />
           <span className="ml-2 text-xs text-slate-400">Analyzing your composition...</span>
         </div>
       ) : error ? (
@@ -127,7 +143,7 @@ export function Recommendations({ nodes, edges }: RecommendationsProps) {
         </p>
       ) : recommendations.length === 0 ? (
         <p className="text-xs text-slate-500 italic">
-          Add genre nodes to get culturally-specific recommendations
+          Add genre nodes to get recommendations
         </p>
       ) : (
         <>
@@ -140,9 +156,9 @@ export function Recommendations({ nodes, edges }: RecommendationsProps) {
                 key={rec.instrument_id}
                 draggable
                 onDragStart={(e) => onDragStart(e, rec)}
-                className="group flex items-center gap-2 p-2.5 bg-slate-950/50 border border-slate-700 rounded-md hover:border-violet-500 hover:bg-slate-900/70 transition-colors cursor-move"
+                className="group flex items-center gap-2 p-2.5 bg-slate-950/50 border border-slate-700 rounded-md hover:border-cyan-500 hover:bg-slate-900/70 transition-colors cursor-move"
               >
-                <GripVertical className="w-4 h-4 text-slate-600 group-hover:text-violet-400 flex-shrink-0" />
+                <GripVertical className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="text-sm font-medium text-slate-200">{rec.instrument_name}</p>
@@ -151,7 +167,7 @@ export function Recommendations({ nodes, edges }: RecommendationsProps) {
                     </span>
                   </div>
                   <div className="flex items-center gap-2 mb-1.5">
-                    <span className="text-xs text-violet-400 font-medium">{rec.culture}</span>
+                    <span className="text-xs text-cyan-400 font-medium">{rec.culture}</span>
                     <span className="text-xs text-slate-600">•</span>
                     <span className="text-xs text-slate-500 truncate">{rec.genre}</span>
                   </div>
@@ -165,7 +181,7 @@ export function Recommendations({ nodes, edges }: RecommendationsProps) {
         </>
       )}
 
-      <div className="mt-3 p-2 bg-violet-900/20 border border-violet-800/30 rounded text-xs text-violet-300">
+      <div className="mt-3 p-2 bg-cyan-900/20 border border-cyan-800/30 rounded text-xs text-cyan-300">
         💡 <strong>Tip:</strong> Mix cultures! Hip-Hop + Afrobeat djembe = 🔥
       </div>
     </div>

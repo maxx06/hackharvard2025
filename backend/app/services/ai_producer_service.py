@@ -38,15 +38,19 @@ Example good feedback:
 "Your structure is coming together nicely. The transition from verse to chorus could use a build-up element like a riser or drum fill."
 
 IMPORTANT - Context-aware feedback:
-If a context is provided (e.g., "Just added: Drums", "Just removed: Bass", "User said: add a chorus"), you MUST:
-1. Acknowledge what just changed specifically
-2. Comment on how that change affects the composition
-3. Provide feedback directly related to that change
+If a context is provided (e.g., "Just added: Drums", "Just removed: Bass", "User said: add a chorus"), you MUST follow this structure:
+1. FIRST: Acknowledge what just changed specifically (first sentence)
+2. SECOND: Comment on how that change affects the composition
+3. THIRD: Provide a suggestion or next step (optional, only if it naturally flows)
 
 Examples with context:
-- Context: "Just added: Drums" → "Nice! Those drums lay down a solid foundation. Now that you've got the rhythm section started, consider adding a bassline to lock in the groove."
-- Context: "Just added: Chorus, Synth. User said: add a chorus with synths" → "Great! The chorus section with synths adds energy to the track. The synth choice works well - maybe layer it with some pads to make it even fuller."
-- Context: "Just removed: Bass" → "Okay, we've stripped out the bass. That opens up the low end - this could work for a breakdown section, or you might want to add a different bass sound to fill that space."
+- Context: "Just added: Drums" -> "Nice! You've added drums to lay down the foundation. The rhythm section is starting to take shape - consider adding a bassline next to lock in the groove."
+- Context: "Just added: Chorus, Synth. User said: add a chorus with synths" -> "Great! You've added a chorus section with synths. This brings some energy to the track - maybe layer it with pads to make it even fuller."
+- Context: "Just removed: Bass" -> "Okay, you've removed the bass. That opens up the low end - this could work for a breakdown section, or you might want to add a different bass sound to fill that space."
+- Context: "Just added: Djembe" -> "Nice! You've added a djembe. Those West African polyrhythms will add organic texture to your groove."
+- Context: "Initial setup: Drums, Bass. User said: add drums and bass" -> "Great start! You've set up drums and bass as your foundation. These two elements lock in the groove - consider adding a melodic element next."
+
+CRITICAL: Always start by acknowledging what the user DID before making suggestions.
 
 CULTURAL AWARENESS - Cross-Cultural Suggestions:
 When appropriate, offer culturally-informed production suggestions that blend global music traditions. Draw from your knowledge of:
@@ -130,14 +134,27 @@ class AIProducerService:
 
         # Build the prompt
         graph_json = json.dumps(graph_summary, indent=2)
-        context_text = f"\n\nContext: {context}" if context else ""
+
+        # Make context VERY prominent in the prompt
+        if context:
+            context_section = f"""
+WARNING - IMPORTANT CONTEXT - ACKNOWLEDGE THIS FIRST:
+{context}
+
+The user just made this change. You MUST acknowledge what they just did in your first sentence before making any suggestions.
+"""
+        else:
+            context_section = ""
 
         full_prompt = f"""{PRODUCER_SYSTEM_PROMPT}
 
 Current musical graph:
-{graph_json}{context_text}
-
+{graph_json}
+{context_section}
 Provide your producer feedback now (2-3 sentences max):"""
+
+        print(f"[AI Producer] Context: {context}")
+        print(f"[AI Producer] Graph has {len(nodes)} nodes")
 
         # Use Gemini to generate feedback
         model = genai.GenerativeModel(
@@ -204,6 +221,10 @@ Provide your producer feedback now (2-3 sentences max):"""
 
             if len(audio_data) == 0:
                 raise Exception("ElevenLabs returned empty audio")
+
+            # Validate that we got actual MP3 data
+            if len(audio_data) < 100:
+                raise Exception(f"Audio data too small ({len(audio_data)} bytes), likely invalid")
 
             return audio_data
 

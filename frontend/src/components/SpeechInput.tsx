@@ -196,13 +196,22 @@ const SpeechInput = ({ onTranscript, nodes = [], edges = [] }: SpeechInputProps)
           <div className="flex gap-2">
             <button
               onClick={toggleListening}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              className={`p-3 rounded-full transition-all ${
                 isListening
-                  ? 'bg-red-600 hover:bg-red-700 text-white'
-                  : 'bg-slate-700 hover:bg-slate-600 text-white'
+                  ? 'bg-red-600 hover:bg-red-700 text-white animate-pulse'
+                  : 'bg-cyan-600 hover:bg-cyan-700 text-white'
               }`}
+              title={isListening ? 'Stop Recording' : 'Start Recording'}
             >
-              {isListening ? 'Stop' : 'Start Recording'}
+              {isListening ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="6" y="6" width="12" height="12" rx="1" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="12" r="10" />
+                </svg>
+              )}
             </button>
             <button
               onClick={handleClear}
@@ -213,15 +222,13 @@ const SpeechInput = ({ onTranscript, nodes = [], edges = [] }: SpeechInputProps)
           </div>
         </div>
 
-        <textarea
-          value={transcript}
-          onChange={handleTextChange}
-          disabled={isListening}
-          placeholder={isListening ? 'Listening...' : 'Type or click "Start Recording" to speak...'}
-          className="w-full min-h-[100px] bg-slate-950/50 rounded p-3 border border-slate-800 text-sm text-slate-200 placeholder:text-slate-500 placeholder:italic focus:outline-none focus:ring-2 focus:ring-slate-600 disabled:opacity-50 disabled:cursor-not-allowed resize-y"
-        />
-        {interimTranscript && (
-          <p className="text-sm text-slate-500 mt-2">{interimTranscript}</p>
+        {(transcript || interimTranscript) && (
+          <div className="mb-3 p-3 bg-slate-950/50 rounded border border-slate-800 min-h-[60px]">
+            <p className="text-sm text-slate-200">{transcript}</p>
+            {interimTranscript && (
+              <p className="text-sm text-slate-500 italic mt-1">{interimTranscript}</p>
+            )}
+          </div>
         )}
 
         <div className="mt-3 space-y-2">
