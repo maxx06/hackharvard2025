@@ -20,9 +20,11 @@ app.add_middleware(
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
+@app.head("/")
 async def root():
     return {"message": "Welcome to HackHarvard 2025 API"}
 
 @app.get("/health")
+@app.head("/health")
 async def health_check():
     return {"status": "healthy"}
