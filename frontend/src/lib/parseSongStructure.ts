@@ -1,4 +1,4 @@
-import { Node, Edge } from 'reactflow';
+import { Node, Edge, MarkerType } from 'reactflow';
 import { CustomNodeData } from '@/components/CustomNode';
 
 interface SongSection {
@@ -111,12 +111,12 @@ export function parseSongStructureToGraph(transcript: string): { nodes: Node<Cus
         target: instrumentId,
         type: 'default',
         animated: false,
-        style: { 
-          stroke: '#8b5cf6', 
-          strokeWidth: 2, 
+        style: {
+          stroke: '#8b5cf6',
+          strokeWidth: 2,
           ...(isCrossSection && { strokeDasharray: '5,5' })
         },
-        markerEnd: { type: 'arrowclosed', color: '#8b5cf6' },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#8b5cf6' },
       });
     });
 
@@ -152,7 +152,7 @@ export function parseSongStructureToGraph(transcript: string): { nodes: Node<Cus
           strokeWidth: 2,
           ...(isCrossSection && { strokeDasharray: '5,5' })
         },
-        markerEnd: { type: 'arrowclosed', color: '#ec4899' },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#ec4899' },
       });
     });
 
@@ -166,7 +166,7 @@ export function parseSongStructureToGraph(transcript: string): { nodes: Node<Cus
         type: 'default',
         animated: true,
         style: { stroke: '#10b981', strokeWidth: 4 },
-        markerEnd: { type: 'arrowclosed', color: '#10b981' },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#10b981' },
       });
     }
   });
@@ -383,7 +383,7 @@ function extractSections(transcript: string): SongSection[] {
   return sections;
 }
 
-function determineInstrumentType(instrument: string): CustomNodeData['type'] {
+function determineInstrumentType(instrument: string): 'bassline' | 'drum' | 'melody' | 'synth' | 'vocal' {
   const lowerInst = instrument.toLowerCase();
 
   if (lowerInst.includes('bass') || lowerInst.includes('808')) return 'bassline';

@@ -102,8 +102,15 @@ export function updateEdgeStyle(
   edge: Edge,
   nodes: Node<CustomNodeData>[]
 ): Edge {
-  const style = getEdgeStyle(edge.source, edge.target, nodes, edge.style);
-  
+  const baseStyle = edge.style
+    ? {
+        stroke: typeof edge.style.stroke === 'string' ? edge.style.stroke : undefined,
+        strokeWidth: typeof edge.style.strokeWidth === 'number' ? edge.style.strokeWidth : undefined,
+      }
+    : undefined;
+
+  const style = getEdgeStyle(edge.source, edge.target, nodes, baseStyle);
+
   return {
     ...edge,
     style,

@@ -16,11 +16,13 @@ import ReactFlow, {
   EdgeMouseHandler,
   useReactFlow,
   ReactFlowProvider,
+  MarkerType,
+  ConnectionLineType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { getEdgeStyle, updateAllEdgeStyles } from '@/lib/edgeStyleHelper';
 
-import CustomNode from './CustomNode';
+import CustomNode, { CustomNodeData } from './CustomNode';
 import CustomEdge from './CustomEdge';
 import { getLayoutedElements } from '@/lib/graphLayout';
 
@@ -296,13 +298,13 @@ const KnowledgeGraphInner = ({ initialNodes, initialEdges, onNodeDelete, onNodeE
     if (!editingEdge) return;
 
     setEdges((eds) =>
-      eds.map((edge) =>
+      eds.map((edge): Edge =>
         edge.id === editingEdge.id
           ? {
               ...edge,
               label: editingEdge.label,
               markerEnd: editingEdge.directed
-                ? { type: 'arrowclosed', color: edge.style?.stroke || '#3b82f6' }
+                ? { type: MarkerType.ArrowClosed, color: (edge.style?.stroke as string) || '#3b82f6' }
                 : undefined,
             }
           : edge
@@ -383,7 +385,7 @@ const KnowledgeGraphInner = ({ initialNodes, initialEdges, onNodeDelete, onNodeE
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         nodesDraggable={true}
-        connectionLineType="smoothstep"
+        connectionLineType={ConnectionLineType.SmoothStep}
         connectionLineStyle={{ stroke: '#3b82f6', strokeWidth: 2 }}
         isValidConnection={isValidConnection}
         fitView

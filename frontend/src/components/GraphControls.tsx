@@ -28,6 +28,7 @@ const GraphControls = ({ onAddNode, onClearGraph }: GraphControlsProps) => {
   const [newNodeBpm, setNewNodeBpm] = useState('');
 
   const onDragStart = (event: React.DragEvent, nodeType: CustomNodeData['type']) => {
+    if (!nodeType) return;
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
   };
