@@ -56,15 +56,31 @@ interface ContextMenu {
 }
 
 const KnowledgeGraphInner = ({ initialNodes, initialEdges, onNodeDelete, onNodeEdit, onEdgeDelete, onEdgeAdd, onNodeDrop, mode = 'discovery' }: KnowledgeGraphProps) => {
-  // Only apply auto-layout when in structure mode (has directed edges)
-  // In discovery mode, let users position nodes manually
-  const { nodes: layoutedNodes, edges: layoutedEdges } = useMemo(
-    () => mode === 'structure' ? getLayoutedElements(initialNodes, initialEdges) : { nodes: initialNodes, edges: initialEdges },
-    [initialNodes, initialEdges, mode]
-  );
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
+  // Update nodes and edges when props change, but preserve manually created edges
+  React.useEffect(() => {
+    // Only apply auto-layout when in structure mode (has directed edges)
+    // In discovery mode, let users position nodes manually
+    const { nodes: layoutedNodes, edges: layoutedEdges } = mode === 'structure'
+      ? getLayoutedElements(initialNodes, initialEdges)
+      : { nodes: initialNodes, edges: initialEdges };
+
+    setNodes(layoutedNodes);
+
+    // Merge incoming edges with existing edges, preserving manually created ones
+    setEdges((currentEdges) => {
+      // Get IDs of incoming edges
+      const incomingEdgeIds = new Set(layoutedEdges.map(e => e.id));
+
+      // Keep manually created edges that aren't in the incoming set
+      const manualEdges = currentEdges.filter(e => !incomingEdgeIds.has(e.id));
+
+      // Combine incoming edges with manual edges
+      return [...layoutedEdges, ...manualEdges];
+    });
+  }, [initialNodes, initialEdges, mode, setNodes, setEdges]);
   const [menu, setMenu] = useState<ContextMenu | null>(null);
   const [editingEdge, setEditingEdge] = useState<{ id: string; label: string; directed: boolean } | null>(null);
   const [editingNode, setEditingNode] = useState<{ id: string; data: CustomNodeData } | null>(null);

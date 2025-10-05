@@ -225,7 +225,7 @@ export default function Home() {
         <div className="lg:w-2/3 bg-slate-900/50 rounded-lg border border-slate-800 overflow-hidden relative" style={{ minHeight: '600px' }}>
           <KnowledgeGraph
             initialNodes={nodes}
-            initialEdges={edges}
+            initialEdges={[...edges, ...manualEdges]}
             onNodeDelete={handleDeleteNode}
             onNodeEdit={handleEditNode}
             onEdgeDelete={handleDeleteEdge}
