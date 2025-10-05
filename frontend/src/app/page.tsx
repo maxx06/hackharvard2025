@@ -6,7 +6,7 @@ import WorldMusicRotator from "@/components/WorldMusicRotator"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-x-hidden">
       {/* Enhanced blue aura blobs */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Primary aura blobs */}
@@ -78,10 +78,9 @@ export default function Home() {
                     <rect x="22" y="12" width="3" height="8" rx="1.5" />
                     <rect x="27" y="8" width="3" height="16" rx="1.5" />
                   </svg>
-                     <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500/60 rounded-full animate-ping" />
                    </div>
-                   <span className="font-bold text-xl text-white ml-2">
-                     JAMFUSION
+                   <span className="font-thin text-xl text-white ml-2 font-sans">
+                     Jamfusion
                    </span>
                 </div>
               </div>
