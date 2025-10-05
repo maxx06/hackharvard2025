@@ -18,65 +18,83 @@ const CustomNode = ({ data }: NodeProps<CustomNodeData>) => {
       case 'section':
         return {
           icon: <Layers className="w-6 h-6" />,
-          iconBg: 'bg-blue-500/20',
+          iconBg: 'bg-purple-500/20',
           textSize: 'text-lg',
-          padding: 'px-8 py-4'
+          padding: 'px-8 py-4',
+          gradient: 'from-black via-purple-950 to-purple-900',
+          border: 'border-purple-400/50'
         };
       case 'vocal':
         return {
           icon: <Mic className="w-5 h-5" />,
           iconBg: 'bg-cyan-500/20',
           textSize: 'text-base',
-          padding: 'px-6 py-3'
+          padding: 'px-6 py-3',
+          gradient: 'from-black via-blue-950 to-blue-900',
+          border: 'border-cyan-400/50'
         };
       case 'bassline':
         return {
           icon: <Activity className="w-5 h-5" />,
           iconBg: 'bg-blue-500/20',
           textSize: 'text-base',
-          padding: 'px-6 py-3'
+          padding: 'px-6 py-3',
+          gradient: 'from-black via-blue-950 to-blue-900',
+          border: 'border-cyan-400/50'
         };
       case 'drum':
         return {
           icon: <Drum className="w-5 h-5" />,
           iconBg: 'bg-red-500/20',
           textSize: 'text-base',
-          padding: 'px-6 py-3'
+          padding: 'px-6 py-3',
+          gradient: 'from-black via-blue-950 to-blue-900',
+          border: 'border-cyan-400/50'
         };
       case 'melody':
         return {
           icon: <Music className="w-5 h-5" />,
           iconBg: 'bg-blue-500/20',
           textSize: 'text-base',
-          padding: 'px-6 py-3'
+          padding: 'px-6 py-3',
+          gradient: 'from-black via-blue-950 to-blue-900',
+          border: 'border-cyan-400/50'
         };
       case 'synth':
         return {
           icon: <Radio className="w-5 h-5" />,
           iconBg: 'bg-cyan-500/20',
           textSize: 'text-base',
-          padding: 'px-6 py-3'
+          padding: 'px-6 py-3',
+          gradient: 'from-black via-blue-950 to-blue-900',
+          border: 'border-cyan-400/50'
         };
       case 'chord':
         return {
           icon: <Guitar className="w-5 h-5" />,
           iconBg: 'bg-indigo-500/20',
           textSize: 'text-base',
-          padding: 'px-6 py-3'
+          padding: 'px-6 py-3',
+          gradient: 'from-black via-blue-950 to-blue-900',
+          border: 'border-cyan-400/50'
         };
       case 'fx':
         return {
           icon: <Sparkles className="w-5 h-5" />,
           iconBg: 'bg-orange-500/20',
           textSize: 'text-base',
-          padding: 'px-6 py-3'
+          padding: 'px-6 py-3',
+          gradient: 'from-black via-blue-950 to-blue-900',
+          border: 'border-cyan-400/50'
         };
       default:
         return {
           icon: <Music className="w-5 h-5" />,
           iconBg: 'bg-gray-500/20',
           textSize: 'text-base',
-          padding: 'px-6 py-3'
+          padding: 'px-6 py-3',
+          gradient: 'from-black via-blue-950 to-blue-900',
+          border: 'border-cyan-400/50'
         };
     }
   };
@@ -84,8 +102,8 @@ const CustomNode = ({ data }: NodeProps<CustomNodeData>) => {
   const style = getNodeStyle();
 
   return (
-    <div className="bg-gradient-to-br from-black via-blue-950 to-blue-900 backdrop-blur-sm border border-cyan-400/50 rounded-2xl shadow-xl text-white min-w-[180px]">
-      <Handle type="target" position={Position.Top} className="w-3 h-3 !bg-cyan-400" />
+    <div className={`bg-gradient-to-br ${style.gradient} backdrop-blur-sm border ${style.border} rounded-2xl shadow-xl text-white min-w-[180px]`}>
+      <Handle type="target" position={Position.Top} className={`w-3 h-3 ${data.type === 'section' ? '!bg-purple-400' : '!bg-cyan-400'}`} />
       <div className={`flex flex-col items-center gap-3 ${style.padding}`}>
         <div className={`${style.iconBg} rounded-full p-3`}>
           {style.icon}
@@ -106,7 +124,7 @@ const CustomNode = ({ data }: NodeProps<CustomNodeData>) => {
           )}
         </div>
       </div>
-      <Handle type="source" position={Position.Bottom} className="w-3 h-3 !bg-cyan-400" />
+      <Handle type="source" position={Position.Bottom} className={`w-3 h-3 ${data.type === 'section' ? '!bg-purple-400' : '!bg-cyan-400'}`} />
     </div>
   );
 };

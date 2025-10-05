@@ -7,6 +7,7 @@ import SpeechInput from '@/components/SpeechInput';
 import GraphControls from '@/components/GraphControls';
 import { AIProducer } from '@/components/AIProducer';
 import { EdgeLegend } from '@/components/EdgeLegend';
+import { Recommendations } from '@/components/Recommendations';
 import { parseTranscriptToGraph } from '@/lib/parseTranscript';
 import { recalculateEdges } from '@/lib/calculateCompatibility';
 import { CustomNodeData } from '@/components/CustomNode';
@@ -138,10 +139,10 @@ export default function Home() {
     setNodes([...nodes, newNode]);
   };
 
-  const handleNodeDrop = (type: CustomNodeData['type'], position: { x: number; y: number }) => {
+  const handleNodeDrop = (type: CustomNodeData['type'], position: { x: number; y: number }, customLabel?: string) => {
     if (!type) return;
     const newNodeId = `node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const label = type.charAt(0).toUpperCase() + type.slice(1);
+    const label = customLabel || (type.charAt(0).toUpperCase() + type.slice(1));
     const newNode: Node<CustomNodeData> = {
       id: newNodeId,
       type: 'custom',
@@ -225,6 +226,8 @@ export default function Home() {
       <div className="flex-1 flex flex-col lg:flex-row gap-4">
         <div className="lg:w-1/3 space-y-3">
           <SpeechInput onTranscript={handleTranscript} nodes={nodes} edges={[...edges, ...manualEdges]} />
+
+          <Recommendations nodes={nodes} edges={[...edges, ...manualEdges]} />
 
           <AIProducer
             nodes={nodes}

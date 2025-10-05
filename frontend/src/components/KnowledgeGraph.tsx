@@ -39,7 +39,7 @@ interface KnowledgeGraphProps {
   onNodeEdit?: (nodeId: string, data: CustomNodeData) => void;
   onEdgeDelete?: (edgeId: string) => void;
   onEdgeAdd?: (edge: Edge) => void;
-  onNodeDrop?: (type: CustomNodeData['type'], position: { x: number; y: number }) => void;
+  onNodeDrop?: (type: CustomNodeData['type'], position: { x: number; y: number }, customLabel?: string) => void;
   mode?: 'structure' | 'discovery';
 }
 
@@ -321,6 +321,7 @@ const KnowledgeGraphInner = ({ initialNodes, initialEdges, onNodeDelete, onNodeE
       event.preventDefault();
 
       const type = event.dataTransfer.getData('application/reactflow') as CustomNodeData['type'];
+      const instrumentName = event.dataTransfer.getData('instrument-name');
 
       if (!type || !reactFlowWrapper.current || !onNodeDrop) {
         return;
@@ -332,7 +333,8 @@ const KnowledgeGraphInner = ({ initialNodes, initialEdges, onNodeDelete, onNodeE
         y: event.clientY - reactFlowBounds.top,
       });
 
-      onNodeDrop(type, position);
+      // Pass the instrument name if available
+      onNodeDrop(type, position, instrumentName || undefined);
     },
     [project, onNodeDrop]
   );
