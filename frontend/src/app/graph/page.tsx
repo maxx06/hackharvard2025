@@ -117,16 +117,11 @@ export default function Home() {
     }
   }, [nodes, edges, manualEdges, mode]);
 
-  // Auto-recalculate edges when nodes change (only in discovery mode)
-  // In structure mode, edges are managed by LLM commands
-  useEffect(() => {
-    if (mode === 'discovery') {
-      // Auto-calculate compatibility edges for discovery mode
-      const autoEdges = recalculateEdges(nodes);
-      setEdges([...autoEdges, ...manualEdges]);
-    }
-    // In structure mode, don't touch edges - they're set by LLM
-  }, [nodes, manualEdges, mode]);
+  // Note: We don't auto-recalculate edges when nodes change
+  // Instead, edges are only calculated when:
+  // 1. Voice commands are used (handled by LLM)
+  // 2. User manually connects nodes
+  // This preserves existing connections when adding new nodes
 
   const handleAddNode = (label: string, type: CustomNodeData['type'], key?: string, bpm?: number) => {
     const newNodeId = `node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
